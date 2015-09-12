@@ -1,0 +1,92 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SOC"
+                android:id="@+id/toggleSOC"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:switchMinWidth="@dimen/switch_min_width"
+                android:textSize="35dp"
+                />
+
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NCH"
+                android:id="@+id/toggleNCH"
+                android:switchMinWidth="@dimen/switch_min_width"
+
+                android:textSize="35dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                />
+
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="KET"
+                android:id="@+id/toggleKET"
+                android:switchMinWidth="94dp"
+                android:textSize="35dp"
+                android:layout_below="@id/toggleSOC"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="80dp"
+                 />
+
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NP"
+                android:id="@+id/toggleNP"
+                android:switchMinWidth="@dimen/switch_min_width"
+                android:textSize="35dp"
+                android:layout_below="@id/toggleNCH"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="80dp"
+                />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="date"
+                android:ems="10"
+                android:id="@+id/editTextDate"
+                android:layout_below="@+id/toggleKET"
+                android:layout_centerHorizontal="true"
+                />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SAVE"
+                android:id="@+id/buttonSave"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/editTextDate"
+                />
+        </RelativeLayout>
+    </ScrollView>
+
+
+
+
+</RelativeLayout>
