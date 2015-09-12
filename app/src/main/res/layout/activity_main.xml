@@ -73,6 +73,7 @@
                 android:id="@+id/editTextDate"
                 android:layout_below="@+id/toggleKET"
                 android:layout_centerHorizontal="true"
+                android:gravity="center"
                 />
 
             <Button
