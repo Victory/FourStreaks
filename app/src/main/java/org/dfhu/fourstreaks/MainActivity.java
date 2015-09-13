@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Switch;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -22,6 +23,11 @@ public class MainActivity extends AppCompatActivity {
     private DateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private MyDatePickerDialog myDatePickerDialog;
 
+    private Switch toggleSOC;
+    private Switch toggleNCH;
+    private Switch toggleNP;
+    private Switch toggleKET;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +39,28 @@ public class MainActivity extends AppCompatActivity {
 
     private void setUpSave() {
         mSave = (Button) findViewById(R.id.buttonSave);
+
+        toggleSOC = (Switch) findViewById(R.id.toggleSOC);
+        toggleNCH = (Switch) findViewById(R.id.toggleNCH);
+        toggleNP = (Switch) findViewById(R.id.toggleNP);
+        toggleKET = (Switch) findViewById(R.id.toggleKET);
+
+        mSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                DaysEventRow row = new DaysEventRow();
+                row.set(DaysEventHelper.C.date_of_event, mDate.getText().toString());
+
+                row.set(DaysEventHelper.C.flag_SOC, toggleSOC.isChecked());
+                row.set(DaysEventHelper.C.flag_NCH, toggleNCH.isChecked());
+                row.set(DaysEventHelper.C.flag_NP, toggleNP.isChecked());
+                row.set(DaysEventHelper.C.flag_KET, toggleKET.isChecked());
+
+                DaysEventSource source = new DaysEventSource(MainActivity.this);
+                source.insert(row);
+            }
+        });
     }
 
     private void setUpDate() {
