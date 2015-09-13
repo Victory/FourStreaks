@@ -1,9 +1,14 @@
 package org.dfhu.fourstreaks;
 
+import android.app.DatePickerDialog;
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 
 import java.text.DateFormat;
@@ -12,7 +17,10 @@ import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
-    EditText mDate;
+    private EditText mDate;
+    private Button mSave;
+    private DateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private MyDatePickerDialog myDatePickerDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,14 +28,50 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         setUpDate();
+        setUpSave();
+    }
+
+    private void setUpSave() {
+        mSave = (Button) findViewById(R.id.buttonSave);
     }
 
     private void setUpDate() {
         mDate = (EditText) findViewById(R.id.editTextDate);
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, -1);
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        mDate.setText(dateFormat.format(cal.getTime()));
+        mDate.setText(mDateFormat.format(cal.getTime()));
+
+        myDatePickerDialog = new MyDatePickerDialog(
+                this, new MyOnDateSetListener(), cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+        mDate.setOnClickListener(new DatePickerClickListener());
+
+    }
+
+    private class MyOnDateSetListener implements DatePickerDialog.OnDateSetListener {
+        @Override
+        public void onDateSet(DatePicker datePicker, int yyyy, int mm, int dd) {
+            Calendar cal = Calendar.getInstance();
+            cal.set(yyyy, mm, dd);
+            mDate.setText(mDateFormat.format(cal.getTime()));
+        }
+    }
+
+    private class DatePickerClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            myDatePickerDialog.show();
+        }
+    }
+
+    private class MyDatePickerDialog extends DatePickerDialog {
+        public MyDatePickerDialog(Context context, OnDateSetListener callBack, int year, int monthOfYear, int dayOfMonth) {
+            super(context, callBack, year, monthOfYear, dayOfMonth);
+        }
+
+        @Override
+        public void onDateChanged(DatePicker view, int year, int month, int day) {
+            super.onDateChanged(view, year, month, day);
+        }
     }
 
     @Override
@@ -51,4 +95,5 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
 }
