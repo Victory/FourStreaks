@@ -5,23 +5,19 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-
-import java.util.concurrent.atomic.AtomicBoolean;
+import org.dfhu.fourstreaks.DaysEventHelper.C;
 
 public class DaysEventSource {
 
-    private DaysEventHelper dbHelper;
-    private SQLiteDatabase db;
-    private AtomicBoolean haveDb = new AtomicBoolean(false);
+    private final DaysEventHelper dbHelper;
+    private final SQLiteDatabase db;
 
     public DaysEventSource(Context context) {
         dbHelper = new DaysEventHelper(context);
+        db = dbHelper.getWritableDatabase();
     }
 
     public void open() throws SQLException {
-        if(haveDb.compareAndSet(false, true)) {
-            db = dbHelper.getWritableDatabase();
-        }
     }
 
     public void close() {
@@ -29,18 +25,19 @@ public class DaysEventSource {
     }
 
     public long insert(AbstractRow row) {
-        open();
-
-        ContentValues vals = row.getContentValues();
-        long insertId = db.insert(DaysEventHelper.DB_NAME, null, vals);
+        ContentValues values = row.getContentValues();
+        long insertId = db.insert(DaysEventHelper.DB_NAME, null, values);
 
 
+
+        String[] columns = DaysEventHelper.getOrderedColumns();
         Cursor cursor = db.query(DaysEventHelper.DB_NAME,
-                null,
-                DaysEventHelper.C.id + " = " + insertId,
+                columns,
+                C._id + " = " + insertId,
                 null, null, null, null);
 
         cursor.moveToFirst();
+        cursor.close();
 
         return insertId;
     }
