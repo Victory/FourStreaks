@@ -2,6 +2,7 @@ package org.dfhu.fourstreaks;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Switch;
 
 import java.text.DateFormat;
@@ -22,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private Button mSave;
     private DateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private MyDatePickerDialog myDatePickerDialog;
+    private ListView mEventsList;
 
     private Switch toggleSOC;
     private Switch toggleNCH;
@@ -35,6 +38,17 @@ public class MainActivity extends AppCompatActivity {
 
         setUpDate();
         setUpSave();
+
+        mEventsList = (ListView) findViewById(R.id.eventsList);
+        fillList();
+
+    }
+
+    private void fillList () {
+        DaysEventSource source = new DaysEventSource(MainActivity.this);
+        Cursor cursor = source.getAll();
+        EventCursorAdapter eventCursorAdapter = new EventCursorAdapter(this, cursor, false);
+        mEventsList.setAdapter(eventCursorAdapter);
     }
 
     private void setUpSave() {
@@ -59,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
 
                 DaysEventSource source = new DaysEventSource(MainActivity.this);
                 source.insert(row);
+
+                fillList();
             }
         });
     }

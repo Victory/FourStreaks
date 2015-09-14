@@ -26,19 +26,14 @@ public class DaysEventSource {
 
     public long insert(AbstractRow row) {
         ContentValues values = row.getContentValues();
-        long insertId = db.insert(DaysEventHelper.DB_NAME, null, values);
+        return db.insert(DaysEventHelper.DB_NAME, null, values);
+    }
 
-
-
+    public Cursor getAll () {
         String[] columns = DaysEventHelper.getOrderedColumns();
-        Cursor cursor = db.query(DaysEventHelper.DB_NAME,
+        return db.query(DaysEventHelper.DB_NAME,
                 columns,
-                C._id + " = " + insertId,
-                null, null, null, null);
-
-        cursor.moveToFirst();
-        cursor.close();
-
-        return insertId;
+                null, null, null, null,
+                C.date_of_event + " DESC");
     }
 }
