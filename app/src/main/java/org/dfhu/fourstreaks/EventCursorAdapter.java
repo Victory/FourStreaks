@@ -12,8 +12,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import org.dfhu.fourstreaks.DaysEventHelper.C;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class EventCursorAdapter extends CursorAdapter {
     Context mContext;
+    AtomicBoolean isLongClick = new AtomicBoolean(false);
 
     public EventCursorAdapter(Context context, Cursor c, boolean flags) {
         super(context, c, flags);
@@ -34,6 +37,10 @@ public class EventCursorAdapter extends CursorAdapter {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (isLongClick.compareAndSet(true, false)) {
+                    return;
+                }
+                isLongClick.set(false);
                 int visibility = gym.getVisibility();
                 int id = (int) view.getTag();
                 if (visibility == View.VISIBLE) {
@@ -48,6 +55,8 @@ public class EventCursorAdapter extends CursorAdapter {
         view.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
+                isLongClick.set(true);
+
                 int visibility = noWeekend.getVisibility();
                 int id = (int) view.getTag();
                 if (visibility == View.VISIBLE) {
