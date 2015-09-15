@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void fillList () {
         DaysEventSource source = new DaysEventSource(MainActivity.this);
-        Cursor cursor = source.getAll();
+        Cursor cursor = source.getAllTopLevel();
         EventCursorAdapter eventCursorAdapter = new EventCursorAdapter(this, cursor, false);
         mEventsList.setAdapter(eventCursorAdapter);
     }
