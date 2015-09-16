@@ -15,12 +15,12 @@ import org.dfhu.fourstreaks.DaysEventHelper.C;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class EventCursorAdapter extends CursorAdapter {
-    Context mContext;
+    MainActivity mContext;
     AtomicBoolean isLongClick = new AtomicBoolean(false);
 
     public EventCursorAdapter(Context context, Cursor c, boolean flags) {
         super(context, c, flags);
-        mContext = context;
+        mContext = (MainActivity) context;
     }
 
     @Override
@@ -41,13 +41,19 @@ public class EventCursorAdapter extends CursorAdapter {
                     return;
                 }
                 isLongClick.set(false);
+
+                DaysEventRow row = new DaysEventRow();
                 int visibility = gym.getVisibility();
                 int id = (int) view.getTag();
                 if (visibility == View.VISIBLE) {
                     gym.setVisibility(View.INVISIBLE);
+                    row.set(C.flag_GYM, 0);
                 } else {
                     gym.setVisibility(View.VISIBLE);
+                    row.set(C.flag_GYM, 1);
                 }
+                DaysEventSource source = new DaysEventSource(mContext);
+                source.updateRow(row, id);
             }
         });
 
@@ -74,6 +80,11 @@ public class EventCursorAdapter extends CursorAdapter {
         TextView ket = (TextView) view.findViewById(R.id.markerKET);
         TextView np = (TextView) view.findViewById(R.id.markerNP);
         TextView dateOfEvent = (TextView) view.findViewById(R.id.dateOfEvent);
+
+        int gymFlag = cursor.getInt(cursor.getColumnIndexOrThrow(C.flag_GYM));
+        if (gymFlag == 1) {
+            gym.setVisibility(View.VISIBLE);
+        }
 
         int nchFlag = cursor.getInt(cursor.getColumnIndexOrThrow(C.flag_NCH));
         if (nchFlag == 1) {

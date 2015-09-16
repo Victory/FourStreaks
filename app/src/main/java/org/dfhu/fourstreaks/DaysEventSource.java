@@ -37,6 +37,14 @@ public class DaysEventSource {
                 C.date_of_event + " DESC");
     }
 
+    public int updateRow (AbstractRow row, int id) {
+        return db.update(
+                DaysEventHelper.DB_NAME,
+                row.getContentValues(),
+                C._id + " = " + id,
+                null);
+    }
+
     /**
      * get all of the known days events, but only get the latest record for each day
      * @return cursor pointing to query results
