@@ -21,10 +21,34 @@
             android:layout_height="wrap_content"
             android:layout_row="0"
             android:layout_column="0"
-            android:layout_columnSpan="3"
             android:text="2015-09-14"
             android:id="@+id/dateOfEvent"
+            android:layout_gravity="left|top"
             />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_row="0"
+            android:layout_column="2"
+            android:text=""
+            android:id="@+id/w"
+            android:layout_marginLeft="30dp"
+            android:layout_gravity="left|top"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_row="0"
+            android:layout_column="3"
+            android:text=""
+            android:id="@+id/bf"
+            android:layout_marginLeft="30dp"
+            android:layout_gravity="left|top"
+            />
+
+
 
         <TextView
             android:layout_width="wrap_content"

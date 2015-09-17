@@ -20,7 +20,11 @@ abstract class AbstractRow {
     }
 
     public void set(String key, Integer value) {
-        set(key, value.toString());
+        insertValues.put(key, value);
+    }
+
+    public void set(String key, Float value) {
+        insertValues.put(key, value);
     }
 
     public void set(String key, Boolean value) {
