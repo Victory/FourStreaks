@@ -38,4 +38,11 @@
         android:layout_height="wrap_content"
         android:text="no weekend"
         android:id="@+id/toggleNoWeekend" />
+
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="gym"
+        android:id="@+id/toggleGym" />
+
 </LinearLayout>

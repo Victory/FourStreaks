@@ -1,11 +1,9 @@
 package org.dfhu.fourstreaks;
 
 import android.app.AlertDialog;
-import android.app.LauncherActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +19,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class EventCursorAdapter extends CursorAdapter {
     MainActivity mContext;
-    AtomicBoolean isLongClick = new AtomicBoolean(false);
+
+    private class ExtraValuesParameters {
+        int rowId;
+        float bfValue;
+        int wValue;
+        int noWeekendFlag;
+    }
 
     public EventCursorAdapter(Context context, Cursor c, boolean flags) {
         super(context, c, flags);
@@ -39,41 +43,7 @@ public class EventCursorAdapter extends CursorAdapter {
         view.setTag(cursor.getInt(cursor.getColumnIndexOrThrow(C._id)));
 
         final ImageView gym = (ImageView) view.findViewById(R.id.markerGYM);
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isLongClick.compareAndSet(true, false)) {
-                    return;
-                }
-                isLongClick.set(false);
 
-                DaysEventRow row = new DaysEventRow();
-                int visibility = gym.getVisibility();
-                int id = (int) view.getTag();
-                if (visibility == View.VISIBLE) {
-                    gym.setVisibility(View.INVISIBLE);
-                    row.set(C.flag_GYM, 0);
-                } else {
-                    gym.setVisibility(View.VISIBLE);
-                    row.set(C.flag_GYM, 1);
-                }
-                DaysEventSource source = new DaysEventSource(mContext);
-                source.updateRow(row, id);
-
-                mContext.fillList();
-            }
-        });
-
-
-        view.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                isLongClick.set(true);
-                int id = (int) view.getTag();
-                openExtraOptionsDialogue(id);
-                return false;
-            }
-        });
 
 
         TextView nch = (TextView) view.findViewById(R.id.markerNCH);
@@ -82,7 +52,6 @@ public class EventCursorAdapter extends CursorAdapter {
         TextView np = (TextView) view.findViewById(R.id.markerNP);
         TextView w = (TextView) view.findViewById(R.id.w);
         TextView bf = (TextView) view.findViewById(R.id.bf);
-
         TextView dateOfEvent = (TextView) view.findViewById(R.id.dateOfEvent);
         ImageView noWeekend = (ImageView) view.findViewById(R.id.markerNoWeekend);
 
@@ -90,7 +59,7 @@ public class EventCursorAdapter extends CursorAdapter {
         if (gymFlag == 1) {
             gym.setVisibility(View.VISIBLE);
         }
-        int noWeekendFlag = cursor.getInt(cursor.getColumnIndexOrThrow(C.flag_no_weekend));
+        final int noWeekendFlag = cursor.getInt(cursor.getColumnIndexOrThrow(C.flag_no_weekend));
         if (noWeekendFlag == 1) {
             noWeekend.setVisibility(View.VISIBLE);
         }
@@ -112,39 +81,64 @@ public class EventCursorAdapter extends CursorAdapter {
             np.setBackgroundColor(getColor(R.color.np));
         }
 
-        int wValue = cursor.getInt(cursor.getColumnIndexOrThrow(C.weight));
+        final int wValue = cursor.getInt(cursor.getColumnIndexOrThrow(C.weight));
         if (wValue > 0) {
             w.setText(String.format("w: %d", wValue));
         }
 
-        float bfValue = cursor.getFloat(cursor.getColumnIndexOrThrow(C.bf));
+        final float bfValue = cursor.getFloat(cursor.getColumnIndexOrThrow(C.bf));
         if (bfValue > 0) {
             bf.setText(String.format("bf: %.1f", bfValue));
         }
 
         String dateOfEventString = cursor.getString(cursor.getColumnIndexOrThrow(C.date_of_event));
         dateOfEvent.setText(dateOfEventString);
+
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                int id = (int) view.getTag();
+
+                ExtraValuesParameters extraValues = new ExtraValuesParameters();
+                extraValues.rowId = id;
+                extraValues.noWeekendFlag = noWeekendFlag;
+                extraValues.bfValue = bfValue;
+                extraValues.wValue = wValue;
+
+                openExtraOptionsDialogue(extraValues);
+
+                mContext.fillList();
+            }
+        });
     }
 
     private int getColor(int id) {
         return mContext.getResources().getColor(id);
     }
 
-    private void openExtraOptionsDialogue(final int id) {
+    private void openExtraOptionsDialogue(final ExtraValuesParameters vals) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setMessage("The extras will be set here");
         builder.setTitle("Set extras");
         LayoutInflater inflater = mContext.getLayoutInflater();
         final LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.extras_dialog, null);
 
+        final EditText wEdit = (EditText) layout.findViewById(R.id.wEdit);
+        if (vals.wValue > 0) {
+            wEdit.setText(String.format("%d", vals.wValue));
+        }
+        final EditText bfEdit = (EditText) layout.findViewById(R.id.bfEdit);
+        final Switch toggleNoWeekend = (Switch) layout.findViewById(R.id.toggleNoWeekend);
+        final Switch toggleGym = (Switch) layout.findViewById(R.id.toggleGym);
+
         builder.setView(layout);
 
         builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        EditText wEdit = (EditText) layout.findViewById(R.id.wEdit);
-                        EditText bfEdit = (EditText) layout.findViewById(R.id.bfEdit);
-                        Switch toggleNoWeekend = (Switch) layout.findViewById(R.id.toggleNoWeekend);
+
 
                         float w;
                         try {
@@ -161,20 +155,22 @@ public class EventCursorAdapter extends CursorAdapter {
                         }
 
                         int noWeekend = toggleNoWeekend.isChecked() ? 1 : 0;
+                        int gym = toggleGym.isChecked() ? 1 : 0;
 
                         DaysEventRow row = new DaysEventRow();
                         row.set(C.weight, w);
                         row.set(C.bf, bf);
                         row.set(C.flag_no_weekend, noWeekend);
+                        row.set(C.flag_GYM, gym);
 
                         DaysEventSource source = new DaysEventSource(mContext);
-                        source.updateRow(row, id);
+                        source.updateRow(row, vals.rowId);
 
                         mContext.fillList();
                     }
                 }
         );
-        builder.setNegativeButton("Cancle", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 dialogInterface.cancel();
