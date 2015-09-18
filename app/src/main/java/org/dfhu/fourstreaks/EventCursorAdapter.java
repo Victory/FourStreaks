@@ -25,6 +25,7 @@ public class EventCursorAdapter extends CursorAdapter {
         float bfValue;
         int wValue;
         int noWeekendFlag;
+        int gymFlag;
     }
 
     public EventCursorAdapter(Context context, Cursor c, boolean flags) {
@@ -42,10 +43,7 @@ public class EventCursorAdapter extends CursorAdapter {
 
         view.setTag(cursor.getInt(cursor.getColumnIndexOrThrow(C._id)));
 
-        final ImageView gym = (ImageView) view.findViewById(R.id.markerGYM);
-
-
-
+        ImageView gym = (ImageView) view.findViewById(R.id.markerGYM);
         TextView nch = (TextView) view.findViewById(R.id.markerNCH);
         TextView soc = (TextView) view.findViewById(R.id.markerSOC);
         TextView ket = (TextView) view.findViewById(R.id.markerKET);
@@ -55,7 +53,7 @@ public class EventCursorAdapter extends CursorAdapter {
         TextView dateOfEvent = (TextView) view.findViewById(R.id.dateOfEvent);
         ImageView noWeekend = (ImageView) view.findViewById(R.id.markerNoWeekend);
 
-        int gymFlag = cursor.getInt(cursor.getColumnIndexOrThrow(C.flag_GYM));
+        final int gymFlag = cursor.getInt(cursor.getColumnIndexOrThrow(C.flag_GYM));
         if (gymFlag == 1) {
             gym.setVisibility(View.VISIBLE);
         }
@@ -103,9 +101,10 @@ public class EventCursorAdapter extends CursorAdapter {
 
                 ExtraValuesParameters extraValues = new ExtraValuesParameters();
                 extraValues.rowId = id;
-                extraValues.noWeekendFlag = noWeekendFlag;
                 extraValues.bfValue = bfValue;
                 extraValues.wValue = wValue;
+                extraValues.noWeekendFlag = noWeekendFlag;
+                extraValues.gymFlag = gymFlag;
 
                 openExtraOptionsDialogue(extraValues);
 
@@ -131,14 +130,16 @@ public class EventCursorAdapter extends CursorAdapter {
         }
         final EditText bfEdit = (EditText) layout.findViewById(R.id.bfEdit);
         final Switch toggleNoWeekend = (Switch) layout.findViewById(R.id.toggleNoWeekend);
+        toggleNoWeekend.setChecked(vals.noWeekendFlag == 1);
+
         final Switch toggleGym = (Switch) layout.findViewById(R.id.toggleGym);
+        toggleGym.setChecked(vals.gymFlag == 1);
 
         builder.setView(layout);
 
         builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-
 
                         float w;
                         try {
