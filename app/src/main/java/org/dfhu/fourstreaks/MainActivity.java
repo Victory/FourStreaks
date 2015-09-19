@@ -13,10 +13,13 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -63,8 +66,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+
                 DaysEventRow row = new DaysEventRow();
-                row.set(DaysEventHelper.C.date_of_event, mDate.getText().toString());
+                String dateString = mDate.getText().toString();
+
+                if (!isValidDate(dateString)) {
+                    Toast.makeText(MainActivity.this, "Invalid date", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                row.set(DaysEventHelper.C.date_of_event, dateString);
 
                 row.set(DaysEventHelper.C.flag_SOC, toggleSOC.isChecked());
                 row.set(DaysEventHelper.C.flag_NCH, toggleNCH.isChecked());
@@ -77,6 +88,22 @@ public class MainActivity extends AppCompatActivity {
                 fillList();
             }
         });
+    }
+
+    private boolean isValidDate (String dateString) {
+        Date date;
+
+        try {
+            date = mDateFormat.parse(dateString);
+        } catch (ParseException e) {
+            return false;
+        }
+
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -1);
+        Date latestDate = new Date(cal.getTimeInMillis());
+
+        return latestDate.compareTo(date) >= 0;
     }
 
     private void setUpDate() {
