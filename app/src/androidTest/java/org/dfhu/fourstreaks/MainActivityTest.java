@@ -10,7 +10,6 @@ import android.widget.Switch;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActivity> {
 
