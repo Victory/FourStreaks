@@ -3,6 +3,7 @@ package org.dfhu.fourstreaks;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.database.Cursor;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -65,13 +66,12 @@ public class MainActivity extends AppCompatActivity {
         mSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
                 DaysEventRow row = new DaysEventRow();
                 String dateString = mDate.getText().toString();
 
                 if (!isValidDate(dateString)) {
-                    Toast.makeText(MainActivity.this, "Invalid date", Toast.LENGTH_SHORT).show();
+                    MyToast.makeText(MainActivity.this, getString(R.string.invalidDate), Toast.LENGTH_SHORT).show();
+
                     return;
                 }
 
@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 
     private boolean isValidDate (String dateString) {
         Date date;
