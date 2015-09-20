@@ -51,12 +51,11 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         }
     }
 
-    public void testValidDate() {
+    public void testInValidDate() {
 
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, 1);
         String tomorrow = mDateFormat.format(cal.getTime());
-
         setTextInEditText(editTextDate, tomorrow);
         clickButton(buttonSave);
 
