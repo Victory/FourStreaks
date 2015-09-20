@@ -57,27 +57,36 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         cal.add(Calendar.DATE, 1);
         String tomorrow = mDateFormat.format(cal.getTime());
 
-        getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                editTextDate.requestFocus();
-            }
-        });
-        getInstrumentation().waitForIdleSync();
-        getInstrumentation().sendStringSync(tomorrow);
-        getInstrumentation().waitForIdleSync();
-
-        getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                buttonSave.performClick();
-            }
-        });
-
+        setTextInEditText(editTextDate, tomorrow);
+        clickButton(buttonSave);
 
         String expected = mActivity.getString(R.string.invalidDate);
         String actual = MyToast.getLastText();
 
         assertEquals(expected, actual);
     }
+
+    protected void setTextInEditText (final EditText elm, String text) {
+        getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                elm.requestFocus();
+            }
+        });
+        getInstrumentation().waitForIdleSync();
+        getInstrumentation().sendStringSync(text);
+        getInstrumentation().waitForIdleSync();
+    }
+
+    protected void clickButton (Button button) {
+        getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                buttonSave.performClick();
+            }
+        });
+    }
+
+
+
 }
