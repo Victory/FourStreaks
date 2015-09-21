@@ -1,19 +1,28 @@
 package org.dfhu.fourstreaks;
 
+import android.app.ActionBar;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.DateFormat;
@@ -22,7 +31,11 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends FragmentActivity {
+
+    private AppSectionsPagerAdapter mAppSectionsPagerAdapter;
+    private ActionBar actionBar;
+    private ViewPager mViewPager;
 
     private EditText mDate;
     private Button mSave;
@@ -35,16 +48,25 @@ public class MainActivity extends AppCompatActivity {
     private Switch toggleNP;
     private Switch toggleKET;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.pager);
 
+        mAppSectionsPagerAdapter = new AppSectionsPagerAdapter(getSupportFragmentManager());
+
+        actionBar = getActionBar();
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager.setAdapter(mAppSectionsPagerAdapter);
+
+        /*
         setUpDate();
         setUpSave();
-
         mEventsList = (ListView) findViewById(R.id.eventsList);
         fillList();
+        */
 
     }
 
@@ -168,4 +190,44 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public static class AppSectionsPagerAdapter extends FragmentPagerAdapter {
+        public AppSectionsPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case -1:
+                    return null;
+                default:
+                    Fragment dummySectionFragment = new DummySectionFragment();
+                    Bundle args = new Bundle();
+                    args.putInt(DummySectionFragment.DUMMY_POSITION, position);
+                    dummySectionFragment.setArguments(args);
+                    return dummySectionFragment;
+
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return 2;
+        }
+    }
+
+    public static class DummySectionFragment extends Fragment {
+
+        public static final String DUMMY_POSITION = "dummyPosition";
+
+        @Nullable
+        @Override
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            View dummyView = inflater.inflate(R.layout.dummy, container, false);
+            Bundle args = getArguments();
+            TextView textView = (TextView) dummyView.findViewById(R.id.dummyText);
+            textView.setText(String.format("%d", args.getInt(DUMMY_POSITION)));
+            return dummyView;
+        }
+    }
 }
