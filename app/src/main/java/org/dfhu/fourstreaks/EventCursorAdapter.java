@@ -18,6 +18,11 @@ import org.dfhu.fourstreaks.DaysEventHelper.C;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class EventCursorAdapter extends CursorAdapter {
+
+    public interface FillListInterface {
+        void fillList();
+    }
+
     MainActivity mContext;
 
     private class ExtraValuesParameters {
