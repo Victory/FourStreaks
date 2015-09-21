@@ -1,7 +1,9 @@
 package org.dfhu.fourstreaks;
 
 import android.test.ActivityInstrumentationTestCase2;
+import android.test.UiThreadTest;
 import android.test.ViewAsserts;
+import android.test.suitebuilder.annotation.SmallTest;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -51,7 +53,8 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         }
     }
 
-    public void testInValidDate() {
+    @SmallTest
+    public void testInvalidDate() {
 
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, 1);
