@@ -55,7 +55,7 @@ public class DaysEventSource {
                 "WHERE " + C._id + " = " +
                 "(SELECT MAX(" + C._id + ") FROM " + DaysEventHelper.DB_NAME +
                     " WHERE " + DaysEventHelper.DB_NAME + "." + C.date_of_event + " = t1." + C.date_of_event + ") " +
-                "ORDER BY " + C._id + " DESC";
+                "ORDER BY " + C.date_of_event + " DESC";
 
         return db.rawQuery(sql, null);
     }

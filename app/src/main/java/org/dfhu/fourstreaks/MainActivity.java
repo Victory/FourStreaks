@@ -15,6 +15,7 @@ public class MainActivity extends FragmentActivity implements EventCursorAdapter
     private AppSectionsPagerAdapter mAppSectionsPagerAdapter;
     private ViewPager mViewPager;
     private InputFragment inputFragment;
+    private StreaksFragment streaksFragment;
 
 
     @Override
@@ -61,6 +62,9 @@ public class MainActivity extends FragmentActivity implements EventCursorAdapter
                 case 0:
                     inputFragment = new InputFragment();
                     return inputFragment;
+                case 1:
+                    streaksFragment = new StreaksFragment();
+                    return streaksFragment;
                 default:
                     Fragment dummySectionFragment = new DummySectionFragment();
                     Bundle args = new Bundle();
