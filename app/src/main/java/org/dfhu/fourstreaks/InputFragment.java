@@ -3,7 +3,9 @@ package org.dfhu.fourstreaks;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -21,6 +23,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class InputFragment extends Fragment {
 
@@ -54,10 +57,27 @@ public class InputFragment extends Fragment {
 
 
     public void fillList () {
-        DaysEventSource source = new DaysEventSource(mainActivity);
-        Cursor cursor = source.getAllTopLevel();
-        EventCursorAdapter eventCursorAdapter = new EventCursorAdapter(mainActivity, cursor, false);
-        mEventsList.setAdapter(eventCursorAdapter);
+        new FillListAsyncTask().execute(mainActivity);
+    }
+
+    private static class FillListAsyncTask extends AsyncTask<MainActivity, Void, EventCursorAdapter> {
+
+        private MainActivity context;
+
+        @Override
+        protected EventCursorAdapter doInBackground(MainActivity... context) {
+            this.context = context[0];
+            DaysEventSource source = new DaysEventSource(this.context);
+            Cursor cursor = source.getAllTopLevel();
+            Looper.prepare(); // need for CursorAdapter
+            return new EventCursorAdapter(this.context, cursor, false);
+        }
+
+        @Override
+        protected void onPostExecute(EventCursorAdapter eventCursorAdapter) {
+            ListView list = (ListView) context.findViewById(R.id.eventsList);
+            list.setAdapter(eventCursorAdapter);
+        }
     }
 
     private void setUpSave() {

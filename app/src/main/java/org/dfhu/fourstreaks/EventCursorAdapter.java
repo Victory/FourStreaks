@@ -15,7 +15,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import org.dfhu.fourstreaks.DaysEventHelper.C;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class EventCursorAdapter extends CursorAdapter {
 
