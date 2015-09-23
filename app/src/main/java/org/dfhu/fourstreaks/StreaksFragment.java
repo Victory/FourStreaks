@@ -20,10 +20,6 @@ import java.util.logging.LogRecord;
  */
 public class StreaksFragment extends Fragment {
 
-    private TextView curNCH;
-    private TextView curSOC;
-    private TextView curNP;
-    private TextView curKET;
     private View rootView;
     private MainActivity mainActivity;
 
@@ -33,11 +29,6 @@ public class StreaksFragment extends Fragment {
         rootView = inflater.inflate(R.layout.streaks, container, false);
 
         mainActivity = (MainActivity) getActivity();
-
-        curNCH = (TextView) rootView.findViewById(R.id.curNCH);
-        curSOC = (TextView) rootView.findViewById(R.id.curSOC);
-        curNP = (TextView) rootView.findViewById(R.id.curNP);
-        curKET = (TextView) rootView.findViewById(R.id.curKET);
 
         setCurrentStreaks();
 
