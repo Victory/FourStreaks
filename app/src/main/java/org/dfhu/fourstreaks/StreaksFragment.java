@@ -75,10 +75,6 @@ public class StreaksFragment extends Fragment {
                 return null;
             }
 
-            int cntNCH = 0;
-            int cntSOC = 0;
-            int cntNP = 0;
-            int cntKET = 0;
             StreakResults result = new StreakResults();
             boolean foundNCH = false;
             boolean foundSOC = false;
@@ -138,11 +134,5 @@ public class StreaksFragment extends Fragment {
 
     private void setCurrentStreaks() {
         new SetCurrentStreaksAsyncTask().execute(mainActivity);
-
-
-
-
     }
-
-
 }
