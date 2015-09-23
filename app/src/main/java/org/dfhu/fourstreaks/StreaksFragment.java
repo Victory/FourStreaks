@@ -44,7 +44,7 @@ public class StreaksFragment extends Fragment {
         return rootView;
     }
 
-    private static class SetCurrentStreaksAsyncTask extends AsyncTask<MainActivity, Void, Integer[]> {
+    private static class SetCurrentStreaksAsyncTask extends AsyncTask<MainActivity, Void, SetCurrentStreaksAsyncTask.StreakResults> {
 
         private MainActivity mainActivity;
         private TextView curNCH;
@@ -52,13 +52,20 @@ public class StreaksFragment extends Fragment {
         private TextView curNP;
         private TextView curKET;
 
+        public class StreakResults {
+            int nch;
+            int soc;
+            int np;
+            int ket;
+        }
+
         private boolean isInStreak (Cursor cursor, boolean found, String columnName) {
             return !found && cursor.getInt(cursor.getColumnIndexOrThrow(columnName)) == 1;
 
         }
 
         @Override
-        protected Integer[] doInBackground(MainActivity... mainActivities) {
+        protected StreakResults doInBackground(MainActivity... mainActivities) {
             mainActivity = mainActivities[0];
 
             DaysEventSource source = new DaysEventSource(mainActivity);
@@ -72,6 +79,7 @@ public class StreaksFragment extends Fragment {
             int cntSOC = 0;
             int cntNP = 0;
             int cntKET = 0;
+            StreakResults result = new StreakResults();
             boolean foundNCH = false;
             boolean foundSOC = false;
             boolean foundNP = false;
@@ -82,22 +90,22 @@ public class StreaksFragment extends Fragment {
                 }
 
                 if (isInStreak(cursor, foundNP, DaysEventHelper.C.flag_NCH)) {
-                    cntNCH += 1;
+                    result.nch += 1;
                 } else {
                     foundNCH = true;
                 }
                 if (isInStreak(cursor, foundSOC, DaysEventHelper.C.flag_SOC)) {
-                    cntSOC += 1;
+                    result.soc += 1;
                 } else {
                     foundSOC = true;
                 }
                 if (isInStreak(cursor, foundNP, DaysEventHelper.C.flag_NP)) {
-                    cntNP += 1;
+                    result.np += 1;
                 } else {
                     foundNP = true;
                 }
                 if (isInStreak(cursor, foundKET, DaysEventHelper.C.flag_KET)) {
-                    cntKET += 1;
+                    result.ket += 1;
                 } else {
                     foundKET = true;
                 }
@@ -105,32 +113,26 @@ public class StreaksFragment extends Fragment {
             } while (cursor.moveToNext());
             cursor.close();
 
-            // FIXME: 9/22/15 this should be some sort of struct
-            return new Integer[]{cntNCH, cntSOC, cntNP, cntKET};
+            return result;
         }
 
         @Override
-        protected void onPostExecute(Integer[] integers) {
-            super.onPostExecute(integers);
+        protected void onPostExecute(StreakResults result) {
+            super.onPostExecute(result);
 
-            if (integers == null) {
+            if (result == null) {
                 return;
             }
-
-            int cntNCH = integers[0];
-            int cntSOC = integers[1];
-            int cntNP = integers[2];
-            int cntKET = integers[3];
 
             curNCH = (TextView) mainActivity.findViewById(R.id.curNCH);
             curSOC = (TextView) mainActivity.findViewById(R.id.curSOC);
             curNP = (TextView) mainActivity.findViewById(R.id.curNP);
             curKET = (TextView) mainActivity.findViewById(R.id.curKET);
 
-            curNCH.setText(String.format("%d", cntNCH));
-            curSOC.setText(String.format("%d", cntSOC));
-            curNP.setText(String.format("%d", cntNP));
-            curKET.setText(String.format("%d", cntKET));
+            curNCH.setText(String.format("%d", result.nch));
+            curSOC.setText(String.format("%d", result.soc));
+            curNP.setText(String.format("%d", result.np));
+            curKET.setText(String.format("%d", result.ket));
         }
     }
 
