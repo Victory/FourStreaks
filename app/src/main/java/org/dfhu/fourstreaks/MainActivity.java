@@ -1,6 +1,5 @@
 package org.dfhu.fourstreaks;
 
-import android.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -10,7 +9,12 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 public class MainActivity extends FragmentActivity implements EventCursorAdapter.FillListInterface {
+
+    public static DateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     private AppSectionsPagerAdapter mAppSectionsPagerAdapter;
     private ViewPager mViewPager;
@@ -85,5 +89,8 @@ public class MainActivity extends FragmentActivity implements EventCursorAdapter
         inputFragment.fillList();
     }
 
+    public void setCurrentStreaks() {
+        streaksFragment.setCurrentStreaks();
+    }
 
 }

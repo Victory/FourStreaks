@@ -1,6 +1,5 @@
 package org.dfhu.fourstreaks;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -9,11 +8,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.logging.Handler;
-import java.util.logging.LogRecord;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * holds the steak statistics
@@ -62,21 +62,25 @@ public class StreaksFragment extends Fragment {
             DaysEventSource source = new DaysEventSource(mainActivity);
             Cursor cursor = source.getAllTopLevel();
 
-            if (!cursor.moveToFirst()) {
-                return null;
+            StreakResults result = new StreakResults();
+
+            if (!cursor.moveToFirst() || !isInStreak(cursor)) {
+                return result;
             }
 
-            StreakResults result = new StreakResults();
             boolean foundNCH = false;
             boolean foundSOC = false;
             boolean foundNP = false;
             boolean foundKET = false;
+
+            String last = cursor.getString(cursor.getColumnIndexOrThrow(DaysEventHelper.C.date_of_event));
+            String cur;
             do {
                 if (foundNCH && foundSOC && foundNP && foundKET) {
                     break; // found all current streaks
                 }
 
-                if (isInStreak(cursor, foundNP, DaysEventHelper.C.flag_NCH)) {
+                if (isInStreak(cursor, foundNCH, DaysEventHelper.C.flag_NCH)) {
                     result.nch += 1;
                 } else {
                     foundNCH = true;
@@ -97,19 +101,63 @@ public class StreaksFragment extends Fragment {
                     foundKET = true;
                 }
 
+                cur = cursor.getString(cursor.getColumnIndexOrThrow(DaysEventHelper.C.date_of_event));
+                if (isGapInDate(cur, last)) {
+                    break;
+                }
+                last = cur;
+
             } while (cursor.moveToNext());
             cursor.close();
 
             return result;
         }
 
+        private boolean isGapInDate(String cur, String last) {
+            if (cur.equals(last)) {
+                return false;
+            }
+
+            DateFormat dateFormat = MainActivity.mDateFormat;
+
+            Date curDate;
+            Date lastDate;
+            try {
+                curDate = dateFormat.parse(cur);
+                lastDate = dateFormat.parse(last);
+            } catch (ParseException e) {
+                return false;
+            }
+
+            long diff = lastDate.getTime() - curDate.getTime();
+            return TimeUnit.HOURS.convert(diff, TimeUnit.MILLISECONDS) > 24;
+        }
+
+        /**
+         * return true if the cursor points to a date that is less than 24 hours ago
+         * @param cursor must have DaysEventHelper.C.date_of_event column
+         * @return true if cursor is within the last day
+         */
+        private boolean isInStreak(Cursor cursor) {
+            String lastRecordedDateString = cursor.getString(cursor.getColumnIndexOrThrow(DaysEventHelper.C.date_of_event));
+            DateFormat dateFormat = MainActivity.mDateFormat;
+
+            Date last;
+            try {
+                last = dateFormat.parse(lastRecordedDateString);
+            } catch (ParseException e) {
+                return false;
+            }
+            Date today = new Date();
+
+            long diff = today.getTime() - last.getTime();
+
+            return TimeUnit.HOURS.convert(diff, TimeUnit.MILLISECONDS) < 48;
+        }
+
         @Override
         protected void onPostExecute(StreakResults result) {
             super.onPostExecute(result);
-
-            if (result == null) {
-                return;
-            }
 
             curNCH = (TextView) mainActivity.findViewById(R.id.curNCH);
             curSOC = (TextView) mainActivity.findViewById(R.id.curSOC);
@@ -123,7 +171,7 @@ public class StreaksFragment extends Fragment {
         }
     }
 
-    private void setCurrentStreaks() {
+    public void setCurrentStreaks() {
         new SetCurrentStreaksAsyncTask().execute(mainActivity);
     }
 }

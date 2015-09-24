@@ -18,20 +18,16 @@ import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class InputFragment extends Fragment {
 
     private EditText mDate;
     private Button mSave;
-    private DateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private MyDatePickerDialog myDatePickerDialog;
-    private ListView mEventsList;
 
     private Switch toggleSOC;
     private Switch toggleNCH;
@@ -49,7 +45,7 @@ public class InputFragment extends Fragment {
 
         setUpDate();
         setUpSave();
-        mEventsList = (ListView) rootView.findViewById(R.id.eventsList);
+
         fillList();
 
         return rootView;
@@ -69,7 +65,12 @@ public class InputFragment extends Fragment {
             this.context = context[0];
             DaysEventSource source = new DaysEventSource(this.context);
             Cursor cursor = source.getAllTopLevel();
-            Looper.prepare(); // need for CursorAdapter
+
+            // safe check and set because myLooper() is per thread
+            if (Looper.myLooper() == null) {
+                Looper.prepare(); // need for CursorAdapter
+            }
+
             return new EventCursorAdapter(this.context, cursor, false);
         }
 
@@ -111,6 +112,8 @@ public class InputFragment extends Fragment {
                 source.insert(row);
 
                 fillList();
+
+                mainActivity.setCurrentStreaks();
             }
         });
     }
@@ -120,7 +123,7 @@ public class InputFragment extends Fragment {
         Date date;
 
         try {
-            date = mDateFormat.parse(dateString);
+            date = MainActivity.mDateFormat.parse(dateString);
         } catch (ParseException e) {
             return false;
         }
@@ -136,7 +139,7 @@ public class InputFragment extends Fragment {
         mDate = (EditText) rootView.findViewById(R.id.editTextDate);
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, -1);
-        mDate.setText(mDateFormat.format(cal.getTime()));
+        mDate.setText(MainActivity.mDateFormat.format(cal.getTime()));
 
         myDatePickerDialog = new MyDatePickerDialog(
                 mainActivity, new MyOnDateSetListener(), cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
@@ -149,7 +152,7 @@ public class InputFragment extends Fragment {
         public void onDateSet(DatePicker datePicker, int yyyy, int mm, int dd) {
             Calendar cal = Calendar.getInstance();
             cal.set(yyyy, mm, dd);
-            mDate.setText(mDateFormat.format(cal.getTime()));
+            mDate.setText(MainActivity.mDateFormat.format(cal.getTime()));
         }
     }
 
