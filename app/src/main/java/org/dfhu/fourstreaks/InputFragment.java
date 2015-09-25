@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class InputFragment extends Fragment {
 
+
     private EditText mDate;
     private Button mSave;
     private MyDatePickerDialog myDatePickerDialog;
@@ -34,7 +35,7 @@ public class InputFragment extends Fragment {
     private Switch toggleNP;
     private Switch toggleKET;
     private View rootView;
-    private MainActivity mainActivity;
+    private static MainActivity mainActivity;
 
     @Nullable
     @Override
@@ -46,11 +47,15 @@ public class InputFragment extends Fragment {
         setUpDate();
         setUpSave();
 
-        fillList();
-
         return rootView;
     }
 
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        fillList();
+    }
 
     public void fillList () {
         new FillListAsyncTask().execute(mainActivity);
@@ -61,8 +66,16 @@ public class InputFragment extends Fragment {
         private MainActivity context;
 
         @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            ListView list = (ListView) mainActivity.findViewById(R.id.eventsList);
+            list.setVisibility(View.VISIBLE);
+        }
+
+        @Override
         protected EventCursorAdapter doInBackground(MainActivity... context) {
             this.context = context[0];
+
             DaysEventSource source = new DaysEventSource(this.context);
             Cursor cursor = source.getAllTopLevel();
 
@@ -78,6 +91,7 @@ public class InputFragment extends Fragment {
         protected void onPostExecute(EventCursorAdapter eventCursorAdapter) {
             ListView list = (ListView) context.findViewById(R.id.eventsList);
             list.setAdapter(eventCursorAdapter);
+            list.setVisibility(View.VISIBLE);
         }
     }
 

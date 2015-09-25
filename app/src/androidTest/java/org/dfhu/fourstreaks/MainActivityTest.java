@@ -7,6 +7,7 @@ import android.test.suitebuilder.annotation.SmallTest;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Switch;
 
 import java.text.DateFormat;
@@ -23,6 +24,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
     private View origin;
     private Switch[] switches;
     private EditText editTextDate;
+    private ListView eventsList;
 
     private DateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private Button buttonSave;
@@ -45,6 +47,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
 
         editTextDate = (EditText) mActivity.findViewById(R.id.editTextDate);
         buttonSave = (Button) mActivity.findViewById(R.id.buttonSave);
+        eventsList = (ListView) mActivity.findViewById(R.id.eventsList);
     }
 
     public void testAllSwitchesVisible() {
@@ -69,9 +72,11 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
     }
 
     protected void setTextInEditText (final EditText elm, String text) {
+
         getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {
+                elm.setText("");
                 elm.requestFocus();
             }
         });
@@ -80,15 +85,34 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         getInstrumentation().waitForIdleSync();
     }
 
-    protected void clickButton (Button button) {
+    protected void clickButton (final Button button) {
         getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {
-                buttonSave.performClick();
+                button.performClick();
+            }
+        });
+    }
+
+    protected void clickToggle (final Switch toggle) {
+        getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                toggle.performClick();
             }
         });
     }
 
 
+    @SmallTest
+    public void testInsertingItemWithNoExtras () {
+        for (Switch toggle: switches) {
+            clickToggle(toggle);
+        }
+
+        clickButton(buttonSave);
+        getInstrumentation().waitForIdleSync();
+        ViewAsserts.assertOnScreen(origin, eventsList); // FIXME: 9/25/15 this should fail
+    }
 
 }
