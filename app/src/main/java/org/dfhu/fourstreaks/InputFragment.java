@@ -76,6 +76,10 @@ public class InputFragment extends Fragment {
         protected EventCursorAdapter doInBackground(MainActivity... context) {
             this.context = context[0];
 
+            if (this.context == null) {
+                return null;
+            }
+
             DaysEventSource source = new DaysEventSource(this.context);
             Cursor cursor = source.getAllTopLevel();
 
@@ -89,6 +93,12 @@ public class InputFragment extends Fragment {
 
         @Override
         protected void onPostExecute(EventCursorAdapter eventCursorAdapter) {
+
+            // context has likely gone away
+            if (eventCursorAdapter == null) {
+                return;
+            }
+
             ListView list = (ListView) context.findViewById(R.id.eventsList);
             list.setAdapter(eventCursorAdapter);
             list.setVisibility(View.VISIBLE);
