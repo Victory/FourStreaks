@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 public class StreaksFragment extends Fragment {
 
     private View rootView;
-    private MainActivity mainActivity;
+    private static MainActivity mainActivity;
 
     @Nullable
     @Override
@@ -30,14 +30,17 @@ public class StreaksFragment extends Fragment {
 
         mainActivity = (MainActivity) getActivity();
 
-        setCurrentStreaks();
-
         return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setCurrentStreaks();
     }
 
     private static class SetCurrentStreaksAsyncTask extends AsyncTask<MainActivity, Void, SetCurrentStreaksAsyncTask.StreakResults> {
 
-        private MainActivity mainActivity;
         private TextView curNCH;
         private TextView curSOC;
         private TextView curNP;
@@ -56,8 +59,18 @@ public class StreaksFragment extends Fragment {
         }
 
         @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            curNCH = (TextView) mainActivity.findViewById(R.id.curNCH);
+            curSOC = (TextView) mainActivity.findViewById(R.id.curSOC);
+            curNP = (TextView) mainActivity.findViewById(R.id.curNP);
+            curKET = (TextView) mainActivity.findViewById(R.id.curKET);
+        }
+
+        @Override
         protected StreakResults doInBackground(MainActivity... mainActivities) {
-            mainActivity = mainActivities[0];
+            mainActivity = mainActivities[0]; // FIXME: 9/27/15 should be decoupled
 
             DaysEventSource source = new DaysEventSource(mainActivity);
             Cursor cursor = source.getAllTopLevel();
@@ -158,11 +171,6 @@ public class StreaksFragment extends Fragment {
         @Override
         protected void onPostExecute(StreakResults result) {
             super.onPostExecute(result);
-
-            curNCH = (TextView) mainActivity.findViewById(R.id.curNCH);
-            curSOC = (TextView) mainActivity.findViewById(R.id.curSOC);
-            curNP = (TextView) mainActivity.findViewById(R.id.curNP);
-            curKET = (TextView) mainActivity.findViewById(R.id.curKET);
 
             curNCH.setText(String.format("%d", result.nch));
             curSOC.setText(String.format("%d", result.soc));

@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -21,7 +22,6 @@ import android.widget.Toast;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class InputFragment extends Fragment {
 
@@ -64,12 +64,17 @@ public class InputFragment extends Fragment {
     private static class FillListAsyncTask extends AsyncTask<MainActivity, Void, EventCursorAdapter> {
 
         private MainActivity context;
+        private ListView list;
+        private ImageView listLoading;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            ListView list = (ListView) mainActivity.findViewById(R.id.eventsList);
-            list.setVisibility(View.VISIBLE);
+            list = (ListView) mainActivity.findViewById(R.id.eventsList);
+            list.setVisibility(View.INVISIBLE);
+
+            listLoading = (ImageView) mainActivity.findViewById(R.id.listLoading);
+            listLoading.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -99,9 +104,9 @@ public class InputFragment extends Fragment {
                 return;
             }
 
-            ListView list = (ListView) context.findViewById(R.id.eventsList);
             list.setAdapter(eventCursorAdapter);
             list.setVisibility(View.VISIBLE);
+            listLoading.setVisibility(View.INVISIBLE);
         }
     }
 

@@ -1,5 +1,6 @@
 package org.dfhu.fourstreaks;
 
+import android.content.pm.ActivityInfo;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.UiThreadTest;
 import android.test.ViewAsserts;
@@ -7,6 +8,7 @@ import android.test.suitebuilder.annotation.SmallTest;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Switch;
 
@@ -25,6 +27,8 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
     private Switch[] switches;
     private EditText editTextDate;
     private ListView eventsList;
+
+    private ImageView listLoading;
 
     private DateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private Button buttonSave;
@@ -48,6 +52,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         editTextDate = (EditText) mActivity.findViewById(R.id.editTextDate);
         buttonSave = (Button) mActivity.findViewById(R.id.buttonSave);
         eventsList = (ListView) mActivity.findViewById(R.id.eventsList);
+        listLoading = (ImageView) mActivity.findViewById(R.id.listLoading);
     }
 
     public void testAllSwitchesVisible() {
@@ -105,14 +110,23 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
 
 
     @SmallTest
-    public void testInsertingItemWithNoExtras () {
+    public void testInsertingItemWithNoExtras () throws InterruptedException {
         for (Switch toggle: switches) {
             clickToggle(toggle);
         }
 
         clickButton(buttonSave);
         getInstrumentation().waitForIdleSync();
-        ViewAsserts.assertOnScreen(origin, eventsList); // FIXME: 9/25/15 this should fail
+        ViewAsserts.assertOnScreen(origin, listLoading);
+        assertEquals(listLoading.getVisibility(), View.VISIBLE);
+        assertEquals(eventsList.getVisibility(), View.INVISIBLE);
+        getInstrumentation().waitForIdleSync();
+
+        Thread.sleep(3000); // would be better if didn't have to sleep
+
+        ViewAsserts.assertOnScreen(origin, eventsList);
+        assertEquals(listLoading.getVisibility(), View.INVISIBLE);
+        assertEquals(eventsList.getVisibility(), View.VISIBLE);
     }
 
 }

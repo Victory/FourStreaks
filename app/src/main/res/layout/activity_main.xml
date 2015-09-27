@@ -85,13 +85,23 @@
                 android:layout_below="@id/editTextDate"
                 />
 
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/listLoading"
+                android:src="@drawable/abc_spinner_textfield_background_material"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/buttonSave"
+                />
+
             <ListView
                 android:layout_width="wrap_content"
                 android:layout_height="400dp"
                 android:id="@+id/eventsList"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
-                android:layout_below="@id/buttonSave"/>
+                android:layout_below="@id/buttonSave"
+                android:visibility="invisible" />
 
         </RelativeLayout>
     </ScrollView>
