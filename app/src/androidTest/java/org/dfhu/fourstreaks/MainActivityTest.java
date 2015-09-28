@@ -16,6 +16,7 @@ import android.widget.Switch;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Random;
 
 public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActivity> {
 
@@ -134,11 +135,19 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
 
     @SmallTest
     public void testOrientationChange() throws InterruptedException {
-        for (int ii = 0; ii < 3; ii++) {
+        Random rand = new Random();
+        int max = 3000;
+        int min = 100;
+        int randomSleep;
+
+        for (int ii = 0; ii < 5; ii++) {
+
             mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             getInstrumentation().waitForIdleSync();
             mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
-            Thread.sleep(1300);
+
+            randomSleep = rand.nextInt((max - min) + 1) + min;
+            Thread.sleep(randomSleep);
 
             mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
