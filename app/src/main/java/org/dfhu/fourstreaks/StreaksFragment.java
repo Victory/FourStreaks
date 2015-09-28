@@ -37,6 +37,59 @@ public class StreaksFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setCurrentStreaks();
+        setLongestStreaks();
+    }
+
+    private void setLongestStreaks() {
+        new SetLongestStreaksAsyncTask(mainActivity).execute();
+    }
+
+    private static class SetLongestStreaksAsyncTask extends AsyncTask<Void, Void, SetLongestStreaksAsyncTask.StreakResults> {
+
+        private MainActivity mainActivity;
+
+        private TextView longestNCH;
+        private TextView longestSOC;
+        private TextView longestNP;
+        private TextView longestKET;
+
+        public class StreakResults {
+            int nch;
+            int soc;
+            int np;
+            int ket;
+        }
+
+        public SetLongestStreaksAsyncTask(MainActivity activity) {
+            mainActivity = activity;
+            longestNCH = (TextView) mainActivity.findViewById(R.id.longestNCH);
+            longestSOC = (TextView) mainActivity.findViewById(R.id.longestSOC);
+            longestNP = (TextView) mainActivity.findViewById(R.id.longestNP);
+            longestKET = (TextView) mainActivity.findViewById(R.id.longestKET);
+        }
+
+        @Override
+        protected StreakResults doInBackground(Void... voids) {
+            StreakResults streaksResults = new StreakResults();
+            streaksResults.nch = 1;
+            streaksResults.soc = 2;
+            streaksResults.np = 3;
+            streaksResults.ket = 4;
+
+            return streaksResults;
+        }
+
+        @Override
+        protected void onPostExecute(StreakResults result) {
+            super.onPostExecute(result);
+
+            longestNCH.setText(String.format("%d", result.nch));
+            longestSOC.setText(String.format("%d", result.soc));
+            longestNP.setText(String.format("%d", result.np));
+            longestKET.setText(String.format("%d", result.ket));
+        }
+
+
     }
 
     private static class SetCurrentStreaksAsyncTask extends AsyncTask<MainActivity, Void, SetCurrentStreaksAsyncTask.StreakResults> {
