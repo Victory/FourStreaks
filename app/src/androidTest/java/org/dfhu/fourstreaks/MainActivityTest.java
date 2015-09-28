@@ -1,5 +1,6 @@
 package org.dfhu.fourstreaks;
 
+import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.UiThreadTest;
@@ -55,26 +56,6 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         listLoading = (ImageView) mActivity.findViewById(R.id.listLoading);
     }
 
-    public void testAllSwitchesVisible() {
-        for (Switch toggle: switches) {
-            ViewAsserts.assertOnScreen(origin, toggle);
-        }
-    }
-
-    @SmallTest
-    public void testInvalidDate() {
-
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, 1);
-        String tomorrow = mDateFormat.format(cal.getTime());
-        setTextInEditText(editTextDate, tomorrow);
-        clickButton(buttonSave);
-
-        String expected = mActivity.getString(R.string.invalidDate);
-        String actual = MyToast.getLastText();
-
-        assertEquals(expected, actual);
-    }
 
     protected void setTextInEditText (final EditText elm, String text) {
 
@@ -110,6 +91,28 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
 
 
     @SmallTest
+    public void testAllSwitchesVisible() {
+        for (Switch toggle: switches) {
+            ViewAsserts.assertOnScreen(origin, toggle);
+        }
+    }
+
+    @SmallTest
+    public void testInvalidDate() {
+
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, 1);
+        String tomorrow = mDateFormat.format(cal.getTime());
+        setTextInEditText(editTextDate, tomorrow);
+        clickButton(buttonSave);
+
+        String expected = mActivity.getString(R.string.invalidDate);
+        String actual = MyToast.getLastText();
+
+        assertEquals(expected, actual);
+    }
+
+    @SmallTest
     public void testInsertingItemWithNoExtras () throws InterruptedException {
         for (Switch toggle: switches) {
             clickToggle(toggle);
@@ -128,5 +131,20 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         assertEquals(listLoading.getVisibility(), View.INVISIBLE);
         assertEquals(eventsList.getVisibility(), View.VISIBLE);
     }
+
+    @SmallTest
+    public void testOrientationChange() throws InterruptedException {
+        for (int ii = 0; ii < 3; ii++) {
+            mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            getInstrumentation().waitForIdleSync();
+            mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+            Thread.sleep(1300);
+
+            mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
+        }
+        Thread.sleep(3000);
+    }
+
 
 }
