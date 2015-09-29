@@ -37,16 +37,14 @@ public class StreaksFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setCurrentStreaks();
-        setLongestStreaks();
     }
 
-    private void setLongestStreaks() {
-        new SetLongestStreaksAsyncTask(mainActivity).execute();
-    }
+    private static class SetCurrentStreaksAsyncTask extends AsyncTask<MainActivity, Void, SetCurrentStreaksAsyncTask.StreakResults[]> {
 
-    private static class SetLongestStreaksAsyncTask extends AsyncTask<Void, Void, SetLongestStreaksAsyncTask.StreakResults> {
-
-        private MainActivity mainActivity;
+        private TextView curNCH;
+        private TextView curSOC;
+        private TextView curNP;
+        private TextView curKET;
 
         private TextView longestNCH;
         private TextView longestSOC;
@@ -60,56 +58,6 @@ public class StreaksFragment extends Fragment {
             int ket;
         }
 
-        public SetLongestStreaksAsyncTask(MainActivity activity) {
-            mainActivity = activity;
-            longestNCH = (TextView) mainActivity.findViewById(R.id.longestNCH);
-            longestSOC = (TextView) mainActivity.findViewById(R.id.longestSOC);
-            longestNP = (TextView) mainActivity.findViewById(R.id.longestNP);
-            longestKET = (TextView) mainActivity.findViewById(R.id.longestKET);
-        }
-
-        @Override
-        protected StreakResults doInBackground(Void... voids) {
-            StreakResults streaksResults = new StreakResults();
-            streaksResults.nch = 1;
-            streaksResults.soc = 2;
-            streaksResults.np = 3;
-            streaksResults.ket = 4;
-
-            return streaksResults;
-        }
-
-        @Override
-        protected void onPostExecute(StreakResults result) {
-            super.onPostExecute(result);
-
-            longestNCH.setText(String.format("%d", result.nch));
-            longestSOC.setText(String.format("%d", result.soc));
-            longestNP.setText(String.format("%d", result.np));
-            longestKET.setText(String.format("%d", result.ket));
-        }
-
-
-    }
-
-    private static class SetCurrentStreaksAsyncTask extends AsyncTask<MainActivity, Void, SetCurrentStreaksAsyncTask.StreakResults> {
-
-        private TextView curNCH;
-        private TextView curSOC;
-        private TextView curNP;
-        private TextView curKET;
-
-        public class StreakResults {
-            int nch;
-            int soc;
-            int np;
-            int ket;
-        }
-
-        private boolean isInStreak (Cursor cursor, boolean found, String columnName) {
-            return !found && cursor.getInt(cursor.getColumnIndexOrThrow(columnName)) == 1;
-
-        }
 
         @Override
         protected void onPreExecute() {
@@ -119,20 +67,25 @@ public class StreaksFragment extends Fragment {
             curSOC = (TextView) mainActivity.findViewById(R.id.curSOC);
             curNP = (TextView) mainActivity.findViewById(R.id.curNP);
             curKET = (TextView) mainActivity.findViewById(R.id.curKET);
+
+            longestNCH = (TextView) mainActivity.findViewById(R.id.longestNCH);
+            longestSOC = (TextView) mainActivity.findViewById(R.id.longestSOC);
+            longestNP = (TextView) mainActivity.findViewById(R.id.longestNP);
+            longestKET = (TextView) mainActivity.findViewById(R.id.longestKET);
         }
 
         @Override
-        protected StreakResults doInBackground(MainActivity... mainActivities) {
+        protected StreakResults[] doInBackground(MainActivity... mainActivities) {
             mainActivity = mainActivities[0]; // FIXME: 9/27/15 should be decoupled
 
             DaysEventSource source = new DaysEventSource(mainActivity);
             Cursor cursor = source.getAllTopLevel();
 
-            StreakResults result = new StreakResults();
+            StreakResults tmp = new StreakResults();
+            StreakResults longest = new StreakResults();
+            StreakResults current = new StreakResults();
 
-            if (!cursor.moveToFirst() || !isInStreak(cursor)) {
-                return result;
-            }
+            boolean foundFirst = (!cursor.moveToFirst() || !isInStreak(cursor));
 
             boolean foundNCH = false;
             boolean foundSOC = false;
@@ -145,24 +98,25 @@ public class StreaksFragment extends Fragment {
                 if (foundNCH && foundSOC && foundNP && foundKET) {
                     break; // found all current streaks
                 }
+                current = tmp;
 
                 if (isInStreak(cursor, foundNCH, DaysEventHelper.C.flag_NCH)) {
-                    result.nch += 1;
+                    tmp.nch += 1;
                 } else {
                     foundNCH = true;
                 }
                 if (isInStreak(cursor, foundSOC, DaysEventHelper.C.flag_SOC)) {
-                    result.soc += 1;
+                    tmp.soc += 1;
                 } else {
                     foundSOC = true;
                 }
                 if (isInStreak(cursor, foundNP, DaysEventHelper.C.flag_NP)) {
-                    result.np += 1;
+                    tmp.np += 1;
                 } else {
                     foundNP = true;
                 }
                 if (isInStreak(cursor, foundKET, DaysEventHelper.C.flag_KET)) {
-                    result.ket += 1;
+                    tmp.ket += 1;
                 } else {
                     foundKET = true;
                 }
@@ -176,7 +130,30 @@ public class StreaksFragment extends Fragment {
             } while (cursor.moveToNext());
             cursor.close();
 
-            return result;
+            return new StreakResults[]{current, longest};
+        }
+
+        @Override
+        protected void onPostExecute(StreakResults[] result) {
+            super.onPostExecute(result);
+
+            StreakResults current = result[0];
+            StreakResults longest = result[1];
+
+            curNCH.setText(String.format("%d", current.nch));
+            curSOC.setText(String.format("%d", current.soc));
+            curNP.setText(String.format("%d", current.np));
+            curKET.setText(String.format("%d", current.ket));
+
+            longestNCH.setText(String.format("%d", longest.nch));
+            longestSOC.setText(String.format("%d", longest.soc));
+            longestNP.setText(String.format("%d", longest.np));
+            longestKET.setText(String.format("%d", longest.ket));
+        }
+
+        private boolean isInStreak (Cursor cursor, boolean found, String columnName) {
+            return !found && cursor.getInt(cursor.getColumnIndexOrThrow(columnName)) == 1;
+
         }
 
         private boolean isGapInDate(String cur, String last) {
@@ -221,15 +198,7 @@ public class StreaksFragment extends Fragment {
             return TimeUnit.HOURS.convert(diff, TimeUnit.MILLISECONDS) < 48;
         }
 
-        @Override
-        protected void onPostExecute(StreakResults result) {
-            super.onPostExecute(result);
 
-            curNCH.setText(String.format("%d", result.nch));
-            curSOC.setText(String.format("%d", result.soc));
-            curNP.setText(String.format("%d", result.np));
-            curKET.setText(String.format("%d", result.ket));
-        }
     }
 
     public void setCurrentStreaks() {
