@@ -39,7 +39,7 @@ public class StreaksFragment extends Fragment {
         setCurrentStreaks();
     }
 
-    private static class SetCurrentStreaksAsyncTask extends AsyncTask<MainActivity, Void, SetCurrentStreaksAsyncTask.StreakResults[]> {
+    private static class SetCurrentStreaksAsyncTask extends AsyncTask<Void, Void, SetCurrentStreaksAsyncTask.StreakResults[]> {
 
         private TextView curNCH;
         private TextView curSOC;
@@ -50,6 +50,7 @@ public class StreaksFragment extends Fragment {
         private TextView longestSOC;
         private TextView longestNP;
         private TextView longestKET;
+
 
         public class StreakResults {
             int nch;
@@ -75,36 +76,60 @@ public class StreaksFragment extends Fragment {
         }
 
         @Override
-        protected StreakResults[] doInBackground(MainActivity... mainActivities) {
-            mainActivity = mainActivities[0]; // FIXME: 9/27/15 should be decoupled
+        protected StreakResults[] doInBackground(Void... voids) {
 
             DaysEventSource source = new DaysEventSource(mainActivity);
             Cursor cursor = source.getAllTopLevel();
+            cursor.moveToFirst();
 
             StreakResults tmp = new StreakResults();
             StreakResults longest = new StreakResults();
             StreakResults current = new StreakResults();
 
-            boolean foundFirst = (!cursor.moveToFirst() || !isInStreak(cursor));
+
 
             boolean foundNCH = false;
             boolean foundSOC = false;
             boolean foundNP = false;
             boolean foundKET = false;
 
+            if (!isInStreak(cursor)) {
+                foundNCH = foundSOC = foundNP = foundKET = true;
+            }
+
             String last = cursor.getString(cursor.getColumnIndexOrThrow(DaysEventHelper.C.date_of_event));
             String cur;
             do {
-                if (foundNCH && foundSOC && foundNP && foundKET) {
-                    break; // found all current streaks
-                }
-                current = tmp;
+                cur = cursor.getString(cursor.getColumnIndexOrThrow(DaysEventHelper.C.date_of_event));
+                boolean isInGap = isGapInDate(cur, last);
+                last = cur;
 
+                if (isInGap) {
+                    tmp = new StreakResults();
+                    foundNCH = foundSOC = foundNP = foundKET = true;
+                }
+                boolean isInStreak = isInStreak(cursor, DaysEventHelper.C.flag_NCH);
+                if (isInStreak) {
+                    tmp.nch += 1;
+                } else {
+                    if (!foundNCH) {
+                        current.nch = tmp.nch;
+                    }
+                    foundNCH = true;
+                    tmp.nch = 0;
+                }
+                if (tmp.nch > longest.nch) {
+                    longest.nch = tmp.nch;
+                }
+
+                /*
                 if (isInStreak(cursor, foundNCH, DaysEventHelper.C.flag_NCH)) {
                     tmp.nch += 1;
                 } else {
                     foundNCH = true;
                 }
+
+
                 if (isInStreak(cursor, foundSOC, DaysEventHelper.C.flag_SOC)) {
                     tmp.soc += 1;
                 } else {
@@ -122,10 +147,21 @@ public class StreaksFragment extends Fragment {
                 }
 
                 cur = cursor.getString(cursor.getColumnIndexOrThrow(DaysEventHelper.C.date_of_event));
-                if (isGapInDate(cur, last)) {
-                    break;
+                if (!findCurrent && isGapInDate(cur, last)) {
+                    findCurrent = true;
+                }
+
+                if (foundNCH && foundSOC && foundNP && foundKET) {
+                    findCurrent = true;
+                }
+
+                if (!findCurrent) {
+                    current = tmp;
                 }
                 last = cur;
+                */
+
+
 
             } while (cursor.moveToNext());
             cursor.close();
@@ -151,8 +187,8 @@ public class StreaksFragment extends Fragment {
             longestKET.setText(String.format("%d", longest.ket));
         }
 
-        private boolean isInStreak (Cursor cursor, boolean found, String columnName) {
-            return !found && cursor.getInt(cursor.getColumnIndexOrThrow(columnName)) == 1;
+        private boolean isInStreak (Cursor cursor, String columnName) {
+            return cursor.getInt(cursor.getColumnIndexOrThrow(columnName)) == 1;
 
         }
 
@@ -202,6 +238,6 @@ public class StreaksFragment extends Fragment {
     }
 
     public void setCurrentStreaks() {
-        new SetCurrentStreaksAsyncTask().execute(mainActivity);
+        new SetCurrentStreaksAsyncTask().execute();
     }
 }
