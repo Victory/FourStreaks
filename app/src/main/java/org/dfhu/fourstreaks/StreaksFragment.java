@@ -13,6 +13,8 @@ import android.widget.TextView;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -52,11 +54,54 @@ public class StreaksFragment extends Fragment {
         private TextView longestKET;
 
 
+        /**
+         * uses DaysEventHelper.C.flag_SOC type notation to store integer values
+         */
         public class StreakResults {
-            int nch;
-            int soc;
-            int np;
-            int ket;
+
+            private String[] flags = new String[]{
+                    DaysEventHelper.C.flag_NCH,
+                    DaysEventHelper.C.flag_SOC,
+                    DaysEventHelper.C.flag_NP,
+                    DaysEventHelper.C.flag_KET
+            };
+
+            private HashMap<String, Integer> values = new HashMap<>();
+
+            public StreakResults() {
+                resetAll();
+            }
+
+            public void increment(String key) {
+                values.put(key, values.get(key) + 1);
+            }
+
+            /**
+             * set the associated key back to zero
+             *
+             * @param key e.g. DaysEventHelper.C.flag_SOC
+             */
+            public void reset(String key) {
+                values.put(key, 0);
+            }
+
+            /**
+             * set all values to zero
+             */
+            public void resetAll () {
+                for (String flag: flags) {
+                    values.put(flag, 0);
+                }
+            }
+
+            public Integer get(String key) {
+                return values.get(key);
+            }
+
+            public void copy (String key, StreakResults rhs) {
+                values.put(key, rhs.get(key));
+            }
+
         }
 
 
@@ -105,68 +150,49 @@ public class StreaksFragment extends Fragment {
                 last = cur;
 
                 if (isInGap) {
-                    tmp = new StreakResults();
+                    tmp.resetAll();
                     foundNCH = foundSOC = foundNP = foundKET = true;
                 }
-                boolean isInStreak = isInStreak(cursor, DaysEventHelper.C.flag_NCH);
-                if (isInStreak) {
-                    tmp.nch += 1;
-                } else {
-                    if (!foundNCH) {
-                        current.nch = tmp.nch;
-                    }
-                    foundNCH = true;
-                    tmp.nch = 0;
-                }
-                if (tmp.nch > longest.nch) {
-                    longest.nch = tmp.nch;
-                }
 
-                /*
-                if (isInStreak(cursor, foundNCH, DaysEventHelper.C.flag_NCH)) {
-                    tmp.nch += 1;
-                } else {
-                    foundNCH = true;
-                }
-
-
-                if (isInStreak(cursor, foundSOC, DaysEventHelper.C.flag_SOC)) {
-                    tmp.soc += 1;
-                } else {
-                    foundSOC = true;
-                }
-                if (isInStreak(cursor, foundNP, DaysEventHelper.C.flag_NP)) {
-                    tmp.np += 1;
-                } else {
-                    foundNP = true;
-                }
-                if (isInStreak(cursor, foundKET, DaysEventHelper.C.flag_KET)) {
-                    tmp.ket += 1;
-                } else {
-                    foundKET = true;
-                }
-
-                cur = cursor.getString(cursor.getColumnIndexOrThrow(DaysEventHelper.C.date_of_event));
-                if (!findCurrent && isGapInDate(cur, last)) {
-                    findCurrent = true;
-                }
-
-                if (foundNCH && foundSOC && foundNP && foundKET) {
-                    findCurrent = true;
-                }
-
-                if (!findCurrent) {
-                    current = tmp;
-                }
-                last = cur;
-                */
-
-
+                foundNCH = calculateStreak(cursor, DaysEventHelper.C.flag_NCH, foundNCH, current, longest, tmp);
+                foundSOC = calculateStreak(cursor, DaysEventHelper.C.flag_SOC, foundSOC, current, longest, tmp);
+                foundNP = calculateStreak(cursor, DaysEventHelper.C.flag_NP, foundNP, current, longest, tmp);
+                foundKET = calculateStreak(cursor, DaysEventHelper.C.flag_KET, foundKET, current, longest, tmp);
 
             } while (cursor.moveToNext());
             cursor.close();
 
             return new StreakResults[]{current, longest};
+        }
+
+        /**
+         *
+         * @param cursor points to DaysEventSource.getAllTopLevel
+         * @param key e.g.
+         * @param found DaysEventHelper.C.flag_NCH
+         * @param current holds current streaks
+         * @param longest holds longest streaks
+         * @param tmp holds the temp streaks calculation
+         * @return true if current streak has been found
+         */
+        private boolean calculateStreak (
+                Cursor cursor, String key, boolean found, StreakResults current, StreakResults longest, StreakResults tmp) {
+
+            boolean isInStreak = isInStreak(cursor, key);
+            if (isInStreak) {
+                tmp.increment(key);
+            } else {
+                if (!found) {
+                    found = true;
+                    current.copy(key, tmp);
+                }
+                tmp.reset(key);
+            }
+            if (tmp.get(key) > longest.get(key)) {
+                longest.copy(key, tmp);
+            }
+
+            return found;
         }
 
         @Override
@@ -176,15 +202,15 @@ public class StreaksFragment extends Fragment {
             StreakResults current = result[0];
             StreakResults longest = result[1];
 
-            curNCH.setText(String.format("%d", current.nch));
-            curSOC.setText(String.format("%d", current.soc));
-            curNP.setText(String.format("%d", current.np));
-            curKET.setText(String.format("%d", current.ket));
+            curNCH.setText(String.format("%d", current.get(DaysEventHelper.C.flag_NCH)));
+            curSOC.setText(String.format("%d", current.get(DaysEventHelper.C.flag_SOC)));
+            curNP.setText(String.format("%d", current.get(DaysEventHelper.C.flag_NP)));
+            curKET.setText(String.format("%d", current.get(DaysEventHelper.C.flag_KET)));
 
-            longestNCH.setText(String.format("%d", longest.nch));
-            longestSOC.setText(String.format("%d", longest.soc));
-            longestNP.setText(String.format("%d", longest.np));
-            longestKET.setText(String.format("%d", longest.ket));
+            longestNCH.setText(String.format("%d", longest.get(DaysEventHelper.C.flag_NCH)));
+            longestSOC.setText(String.format("%d", longest.get(DaysEventHelper.C.flag_SOC)));
+            longestNP.setText(String.format("%d", longest.get(DaysEventHelper.C.flag_NP)));
+            longestKET.setText(String.format("%d", longest.get(DaysEventHelper.C.flag_KET)));
         }
 
         private boolean isInStreak (Cursor cursor, String columnName) {

@@ -42,8 +42,8 @@
             <Switch
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="KET"
-                android:id="@+id/toggleKET"
+                android:text="NP"
+                android:id="@+id/toggleNP"
                 android:switchMinWidth="94dp"
                 android:textSize="35dp"
                 android:layout_below="@id/toggleSOC"
@@ -55,8 +55,8 @@
             <Switch
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="NP"
-                android:id="@+id/toggleNP"
+                android:text="KET"
+                android:id="@+id/toggleKET"
                 android:switchMinWidth="@dimen/switch_min_width"
                 android:textSize="35dp"
                 android:layout_below="@id/toggleNCH"

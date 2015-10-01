@@ -49,15 +49,18 @@ public class EventCursorAdapter extends CursorAdapter {
 
         view.setTag(rowId);
 
-        ImageView gym = (ImageView) view.findViewById(R.id.markerGYM);
+
         TextView nch = (TextView) view.findViewById(R.id.markerNCH);
         TextView soc = (TextView) view.findViewById(R.id.markerSOC);
-        TextView ket = (TextView) view.findViewById(R.id.markerKET);
         TextView np = (TextView) view.findViewById(R.id.markerNP);
+        TextView ket = (TextView) view.findViewById(R.id.markerKET);
+
+        TextView dateOfEvent = (TextView) view.findViewById(R.id.dateOfEvent);
         TextView w = (TextView) view.findViewById(R.id.w);
         TextView bf = (TextView) view.findViewById(R.id.bf);
-        TextView dateOfEvent = (TextView) view.findViewById(R.id.dateOfEvent);
+
         ImageView noWeekend = (ImageView) view.findViewById(R.id.markerNoWeekend);
+        ImageView gym = (ImageView) view.findViewById(R.id.markerGYM);
 
         TextView rowIdView = (TextView) view.findViewById(R.id.rowId);
         rowIdView.setText(Long.toString(rowId));
@@ -87,17 +90,19 @@ public class EventCursorAdapter extends CursorAdapter {
         } else {
             soc.setBackgroundColor(getColor(R.color.abc_background_cache_hint_selector_material_dark));
         }
-        int ketFlag = cursor.getInt(cursor.getColumnIndexOrThrow(C.flag_KET));
-        if (ketFlag == 1) {
-            ket.setBackgroundColor(getColor(R.color.ket));
-        } else {
-            ket.setBackgroundColor(getColor(R.color.abc_background_cache_hint_selector_material_dark));
-        }
+
         int npFlag = cursor.getInt(cursor.getColumnIndexOrThrow(C.flag_NP));
         if (npFlag == 1) {
             np.setBackgroundColor(getColor(R.color.np));
         } else {
             np.setBackgroundColor(getColor(R.color.abc_background_cache_hint_selector_material_dark));
+        }
+
+        int ketFlag = cursor.getInt(cursor.getColumnIndexOrThrow(C.flag_KET));
+        if (ketFlag == 1) {
+            ket.setBackgroundColor(getColor(R.color.ket));
+        } else {
+            ket.setBackgroundColor(getColor(R.color.abc_background_cache_hint_selector_material_dark));
         }
 
         final int wValue = cursor.getInt(cursor.getColumnIndexOrThrow(C.weight));

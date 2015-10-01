@@ -84,6 +84,7 @@
             android:layout_gravity="right|top"
             />
 
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -91,8 +92,8 @@
             android:layout_column="0"
             android:layout_marginTop="10dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="KET"
-            android:id="@+id/markerKET"
+            android:text="NP"
+            android:id="@+id/markerNP"
             android:layout_gravity="left|top"
             />
 
@@ -103,10 +104,11 @@
             android:layout_column="3"
             android:layout_marginTop="10dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="NP"
-            android:id="@+id/markerNP"
+            android:text="KET"
+            android:id="@+id/markerKET"
             android:layout_gravity="right|top"
             />
+
     </GridLayout>
 
     <ImageView
