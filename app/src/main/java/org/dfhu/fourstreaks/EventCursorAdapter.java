@@ -45,7 +45,9 @@ public class EventCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
 
-        view.setTag(cursor.getInt(cursor.getColumnIndexOrThrow(C._id)));
+        long rowId = cursor.getInt(cursor.getColumnIndexOrThrow(C._id));
+
+        view.setTag(rowId);
 
         ImageView gym = (ImageView) view.findViewById(R.id.markerGYM);
         TextView nch = (TextView) view.findViewById(R.id.markerNCH);
@@ -56,6 +58,12 @@ public class EventCursorAdapter extends CursorAdapter {
         TextView bf = (TextView) view.findViewById(R.id.bf);
         TextView dateOfEvent = (TextView) view.findViewById(R.id.dateOfEvent);
         ImageView noWeekend = (ImageView) view.findViewById(R.id.markerNoWeekend);
+
+        TextView rowIdView = (TextView) view.findViewById(R.id.rowId);
+        rowIdView.setText(Long.toString(rowId));
+
+        String dateOfEventString = cursor.getString(cursor.getColumnIndexOrThrow(C.date_of_event));
+        dateOfEvent.setText(dateOfEventString);
 
         final int gymFlag = cursor.getInt(cursor.getColumnIndexOrThrow(C.flag_GYM));
         if (gymFlag == 1) {
@@ -69,18 +77,27 @@ public class EventCursorAdapter extends CursorAdapter {
         int nchFlag = cursor.getInt(cursor.getColumnIndexOrThrow(C.flag_NCH));
         if (nchFlag == 1) {
             nch.setBackgroundColor(getColor(R.color.nch));
+        } else {
+            nch.setBackgroundColor(getColor(R.color.abc_background_cache_hint_selector_material_dark));
         }
+
         int socFlag = cursor.getInt(cursor.getColumnIndexOrThrow(C.flag_SOC));
         if (socFlag == 1) {
             soc.setBackgroundColor(getColor(R.color.soc));
+        } else {
+            soc.setBackgroundColor(getColor(R.color.abc_background_cache_hint_selector_material_dark));
         }
         int ketFlag = cursor.getInt(cursor.getColumnIndexOrThrow(C.flag_KET));
         if (ketFlag == 1) {
             ket.setBackgroundColor(getColor(R.color.ket));
+        } else {
+            ket.setBackgroundColor(getColor(R.color.abc_background_cache_hint_selector_material_dark));
         }
         int npFlag = cursor.getInt(cursor.getColumnIndexOrThrow(C.flag_NP));
         if (npFlag == 1) {
             np.setBackgroundColor(getColor(R.color.np));
+        } else {
+            np.setBackgroundColor(getColor(R.color.abc_background_cache_hint_selector_material_dark));
         }
 
         final int wValue = cursor.getInt(cursor.getColumnIndexOrThrow(C.weight));
@@ -93,8 +110,8 @@ public class EventCursorAdapter extends CursorAdapter {
             bf.setText(String.format("bf: %.1f", bfValue));
         }
 
-        String dateOfEventString = cursor.getString(cursor.getColumnIndexOrThrow(C.date_of_event));
-        dateOfEvent.setText(dateOfEventString);
+
+
 
 
         view.setOnClickListener(new View.OnClickListener() {
