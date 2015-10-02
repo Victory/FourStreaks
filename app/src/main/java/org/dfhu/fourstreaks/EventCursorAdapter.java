@@ -45,7 +45,7 @@ public class EventCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
 
-        long rowId = cursor.getInt(cursor.getColumnIndexOrThrow(C._id));
+        int rowId = cursor.getInt(cursor.getColumnIndexOrThrow(C._id));
 
         view.setTag(rowId);
 
