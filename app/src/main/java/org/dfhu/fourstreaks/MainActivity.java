@@ -81,7 +81,7 @@ public class MainActivity extends FragmentActivity implements EventCursorAdapter
 
         @Override
         public int getCount() {
-            return 3;
+            return 2;
         }
     }
 
