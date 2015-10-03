@@ -70,11 +70,7 @@ public class MainActivity extends FragmentActivity implements EventCursorAdapter
                     streaksFragment = new StreaksFragment();
                     return streaksFragment;
                 default:
-                    Fragment dummySectionFragment = new DummySectionFragment();
-                    Bundle args = new Bundle();
-                    args.putInt(DummySectionFragment.DUMMY_POSITION, position);
-                    dummySectionFragment.setArguments(args);
-                    return dummySectionFragment;
+                    throw new IndexOutOfBoundsException("internal error only two positions");
 
             }
         }
