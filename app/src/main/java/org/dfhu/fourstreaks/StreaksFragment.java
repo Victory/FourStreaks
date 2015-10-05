@@ -125,13 +125,15 @@ public class StreaksFragment extends Fragment {
 
             DaysEventSource source = new DaysEventSource(mainActivity);
             Cursor cursor = source.getAllTopLevel();
-            cursor.moveToFirst();
 
-            StreakResults tmp = new StreakResults();
             StreakResults longest = new StreakResults();
             StreakResults current = new StreakResults();
 
-
+            // we don't have any values
+            if (!cursor.moveToFirst()) {
+                cursor.close();
+                return new StreakResults[]{current, longest};
+            }
 
             boolean foundNCH = false;
             boolean foundSOC = false;
@@ -144,6 +146,7 @@ public class StreaksFragment extends Fragment {
 
             String last = cursor.getString(cursor.getColumnIndexOrThrow(DaysEventHelper.C.date_of_event));
             String cur;
+            StreakResults tmp = new StreakResults();
             do {
                 cur = cursor.getString(cursor.getColumnIndexOrThrow(DaysEventHelper.C.date_of_event));
                 boolean isInGap = isGapInDate(cur, last);
@@ -213,7 +216,7 @@ public class StreaksFragment extends Fragment {
             longestKET.setText(String.format("%d", longest.get(DaysEventHelper.C.flag_KET)));
         }
 
-        private boolean isInStreak (Cursor cursor, String columnName) {
+        private boolean isInStreak(Cursor cursor, String columnName) {
             return cursor.getInt(cursor.getColumnIndexOrThrow(columnName)) == 1;
 
         }
@@ -244,6 +247,11 @@ public class StreaksFragment extends Fragment {
          * @return true if cursor is within the last day
          */
         private boolean isInStreak(Cursor cursor) {
+            // if we don't have any values then we can't be in a streak
+            if (cursor.getCount() < 1) {
+                return false;
+            }
+
             String lastRecordedDateString = cursor.getString(cursor.getColumnIndexOrThrow(DaysEventHelper.C.date_of_event));
             DateFormat dateFormat = MainActivity.mDateFormat;
 

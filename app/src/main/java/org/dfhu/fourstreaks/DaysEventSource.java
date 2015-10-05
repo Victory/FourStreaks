@@ -46,6 +46,12 @@ public class DaysEventSource {
     }
 
     /**
+     * used in test setup to make sure we start with a clean slate
+     */
+    public void deleteAllRecords () {
+        db.delete(DaysEventHelper.DB_NAME, null, null);
+    }
+    /**
      * get all of the known days events, but only get the latest record for each day
      * @return cursor pointing to query results
      */

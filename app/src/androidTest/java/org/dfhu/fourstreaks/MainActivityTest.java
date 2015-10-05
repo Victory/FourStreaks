@@ -1,9 +1,7 @@
 package org.dfhu.fourstreaks;
 
-import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.test.ActivityInstrumentationTestCase2;
-import android.test.UiThreadTest;
 import android.test.ViewAsserts;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.view.View;
@@ -44,6 +42,9 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         super.setUp();
         mActivity = getActivity();
         origin = mActivity.getWindow().getDecorView();
+
+        DaysEventSource eventsSource = new DaysEventSource(mActivity);
+        eventsSource.deleteAllRecords();
 
         toggleNCH = (Switch) mActivity.findViewById(R.id.toggleNCH);
         toggleSOC = (Switch) mActivity.findViewById(R.id.toggleSOC);
