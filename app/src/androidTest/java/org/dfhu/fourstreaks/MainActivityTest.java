@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -32,6 +33,10 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
 
     private DateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private Button buttonSave;
+
+    private TextView curNCH;
+
+    private TextView longestNCH;
 
     public MainActivityTest() {
         super(MainActivity.class);
@@ -56,6 +61,10 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         buttonSave = (Button) mActivity.findViewById(R.id.buttonSave);
         eventsList = (ListView) mActivity.findViewById(R.id.eventsList);
         listLoading = (ImageView) mActivity.findViewById(R.id.listLoading);
+
+        curNCH = (TextView) mActivity.findViewById(R.id.curNCH);
+
+        longestNCH = (TextView) mActivity.findViewById(R.id.longestNCH);
     }
 
 
@@ -90,7 +99,6 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
             }
         });
     }
-
 
     @SmallTest
     public void testAllSwitchesVisible() {
@@ -157,4 +165,49 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
     }
 
 
+    @SmallTest
+    public void testOneCurStreak () throws InterruptedException {
+
+        clickToggle(toggleNCH);
+
+        clickButton(buttonSave);
+        getInstrumentation().waitForIdleSync();
+        ViewAsserts.assertOnScreen(origin, listLoading);
+        assertEquals(listLoading.getVisibility(), View.VISIBLE);
+        assertEquals(eventsList.getVisibility(), View.INVISIBLE);
+        getInstrumentation().waitForIdleSync();
+
+        Thread.sleep(3000); // would be better if didn't have to sleep
+
+        ViewAsserts.assertOnScreen(origin, eventsList);
+        assertEquals(listLoading.getVisibility(), View.INVISIBLE);
+        assertEquals(eventsList.getVisibility(), View.VISIBLE);
+
+        int actual = Integer.parseInt(curNCH.getText().toString());
+        int expected = 1;
+        assertEquals(expected, actual);
+    }
+
+    @SmallTest
+    public void testOneLongestStreak () throws InterruptedException {
+
+        clickToggle(toggleNCH);
+
+        clickButton(buttonSave);
+        getInstrumentation().waitForIdleSync();
+        ViewAsserts.assertOnScreen(origin, listLoading);
+        assertEquals(listLoading.getVisibility(), View.VISIBLE);
+        assertEquals(eventsList.getVisibility(), View.INVISIBLE);
+        getInstrumentation().waitForIdleSync();
+
+        Thread.sleep(3000); // would be better if didn't have to sleep
+
+        ViewAsserts.assertOnScreen(origin, eventsList);
+        assertEquals(listLoading.getVisibility(), View.INVISIBLE);
+        assertEquals(eventsList.getVisibility(), View.VISIBLE);
+
+        int actual = Integer.parseInt(longestNCH.getText().toString());
+        int expected = 1;
+        assertEquals(expected, actual);
+    }
 }
