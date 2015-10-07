@@ -15,6 +15,7 @@ public class DaysEventHelper extends SQLiteOpenHelper {
 
     public static final int DB_VERSION = 1;
     public static final String DB_NAME = "days_events";
+    private static DaysEventHelper mInstance;
 
     @Retention(RetentionPolicy.RUNTIME)
     public @interface FieldOrder {
@@ -70,8 +71,15 @@ public class DaysEventHelper extends SQLiteOpenHelper {
                     C.row_version + " INTEGER  DEFAULT '" + DB_VERSION + "'" +
             ");";
 
-    DaysEventHelper(Context context) {
+    private DaysEventHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
+    }
+
+    public static synchronized DaysEventHelper getInstance (Context context) {
+        if (mInstance == null) {
+            mInstance = new DaysEventHelper(context.getApplicationContext());
+        }
+        return mInstance;
     }
 
     @Override

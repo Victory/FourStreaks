@@ -13,7 +13,7 @@ public class DaysEventSource {
     private final SQLiteDatabase db;
 
     public DaysEventSource(Context context) {
-        dbHelper = new DaysEventHelper(context);
+        dbHelper = DaysEventHelper.getInstance(context);
         db = dbHelper.getWritableDatabase();
     }
 
