@@ -185,12 +185,14 @@ public class StreaksFragment extends Fragment {
             if (isInStreak) {
                 tmp.increment(key);
             } else {
-                if (!found) {
-                    found = true;
-                    current.copy(key, tmp);
-                }
+                found = true;
                 tmp.reset(key);
             }
+
+            if (!found && tmp.get(key) > current.get(key)) {
+                current.copy(key, tmp);
+            }
+
             if (tmp.get(key) > longest.get(key)) {
                 longest.copy(key, tmp);
             }

@@ -3,6 +3,7 @@ package org.dfhu.fourstreaks;
 import android.content.pm.ActivityInfo;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.ViewAsserts;
+import android.test.suitebuilder.annotation.LargeTest;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.view.View;
 import android.widget.Button;
@@ -164,17 +165,12 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         Thread.sleep(3000);
     }
 
-
-    @SmallTest
+    @LargeTest
     public void testOneCurStreak () throws InterruptedException {
 
         clickToggle(toggleNCH);
 
         clickButton(buttonSave);
-        getInstrumentation().waitForIdleSync();
-        ViewAsserts.assertOnScreen(origin, listLoading);
-        assertEquals(listLoading.getVisibility(), View.VISIBLE);
-        assertEquals(eventsList.getVisibility(), View.INVISIBLE);
         getInstrumentation().waitForIdleSync();
 
         Thread.sleep(3000); // would be better if didn't have to sleep
@@ -187,6 +183,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         int expected = 1;
         assertEquals(expected, actual);
     }
+
 
     @SmallTest
     public void testOneLongestStreak () throws InterruptedException {
@@ -210,4 +207,5 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         int expected = 1;
         assertEquals(expected, actual);
     }
+
 }
