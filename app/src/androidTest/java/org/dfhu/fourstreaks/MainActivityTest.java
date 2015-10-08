@@ -1,7 +1,9 @@
 package org.dfhu.fourstreaks;
 
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.test.ActivityInstrumentationTestCase2;
+import android.test.RenamingDelegatingContext;
 import android.test.ViewAsserts;
 import android.test.suitebuilder.annotation.LargeTest;
 import android.test.suitebuilder.annotation.SmallTest;
@@ -19,6 +21,8 @@ import java.util.Calendar;
 import java.util.Random;
 
 public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActivity> {
+
+    private static final String DB_TEST_PREFIX = "test_";
 
     private MainActivity mActivity;
     private Switch toggleNCH;
@@ -46,11 +50,17 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+
+        Context targetContext = getInstrumentation().getTargetContext();
+
+        RenamingDelegatingContext context
+                = new RenamingDelegatingContext(targetContext, DB_TEST_PREFIX);
+
+        DaysEventSource eventsSource = new DaysEventSource(targetContext);
+        eventsSource.deleteAllRecords();
+
         mActivity = getActivity();
         origin = mActivity.getWindow().getDecorView();
-
-        DaysEventSource eventsSource = new DaysEventSource(mActivity);
-        eventsSource.deleteAllRecords();
 
         toggleNCH = (Switch) mActivity.findViewById(R.id.toggleNCH);
         toggleSOC = (Switch) mActivity.findViewById(R.id.toggleSOC);
@@ -191,11 +201,8 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         clickToggle(toggleNCH);
 
         clickButton(buttonSave);
-        getInstrumentation().waitForIdleSync();
-        ViewAsserts.assertOnScreen(origin, listLoading);
         assertEquals(listLoading.getVisibility(), View.VISIBLE);
         assertEquals(eventsList.getVisibility(), View.INVISIBLE);
-        getInstrumentation().waitForIdleSync();
 
         Thread.sleep(3000); // would be better if didn't have to sleep
 
@@ -205,6 +212,40 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
 
         int actual = Integer.parseInt(longestNCH.getText().toString());
         int expected = 1;
+        assertEquals(expected, actual);
+    }
+
+
+    @SmallTest
+    public void testCurrentStreak () throws InterruptedException {
+        clickToggle(toggleNCH);
+
+        for (int ii = -3; ii < 0; ii++) {
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.DATE, ii);
+            String tomorrow = mDateFormat.format(cal.getTime());
+            setTextInEditText(editTextDate, tomorrow);
+            clickButton(buttonSave);
+        }
+
+
+
+        for (int ii = -10; ii < -5; ii++) {
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.DATE, ii);
+            String tomorrow = mDateFormat.format(cal.getTime());
+            setTextInEditText(editTextDate, tomorrow);
+            clickButton(buttonSave);
+        }
+
+        Thread.sleep(3000);
+
+        int actual = Integer.parseInt(curNCH.getText().toString());
+        int expected = 3;
+        assertEquals(expected, actual);
+
+        actual = Integer.parseInt(longestNCH.getText().toString());
+        expected = 5;
         assertEquals(expected, actual);
     }
 
