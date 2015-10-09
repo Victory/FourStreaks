@@ -40,8 +40,11 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
     private Button buttonSave;
 
     private TextView curNCH;
+    private TextView curSOC;
 
     private TextView longestNCH;
+    private TextView longestSOC;
+
 
     public MainActivityTest() {
         super(MainActivity.class);
@@ -74,8 +77,10 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         listLoading = (ImageView) mActivity.findViewById(R.id.listLoading);
 
         curNCH = (TextView) mActivity.findViewById(R.id.curNCH);
+        curSOC = (TextView) mActivity.findViewById(R.id.curSOC);
 
         longestNCH = (TextView) mActivity.findViewById(R.id.longestNCH);
+        longestSOC = (TextView) mActivity.findViewById(R.id.longestSOC);
     }
 
 
@@ -140,8 +145,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         }
 
         clickButton(buttonSave);
-        getInstrumentation().waitForIdleSync();
-        ViewAsserts.assertOnScreen(origin, listLoading);
+        //getInstrumentation().waitForIdleSync();
         assertEquals(listLoading.getVisibility(), View.VISIBLE);
         assertEquals(eventsList.getVisibility(), View.INVISIBLE);
         getInstrumentation().waitForIdleSync();
@@ -228,8 +232,6 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
             clickButton(buttonSave);
         }
 
-
-
         for (int ii = -10; ii < -5; ii++) {
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.DATE, ii);
@@ -244,8 +246,16 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         int expected = 3;
         assertEquals(expected, actual);
 
+        actual = Integer.parseInt(curSOC.getText().toString());
+        expected = 0;
+        assertEquals(expected, actual);
+
         actual = Integer.parseInt(longestNCH.getText().toString());
         expected = 5;
+        assertEquals(expected, actual);
+
+        actual = Integer.parseInt(longestSOC.getText().toString());
+        expected = 0;
         assertEquals(expected, actual);
     }
 
