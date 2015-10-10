@@ -6,6 +6,7 @@ import android.test.ActivityInstrumentationTestCase2;
 import android.test.RenamingDelegatingContext;
 import android.test.ViewAsserts;
 import android.test.suitebuilder.annotation.LargeTest;
+import android.test.suitebuilder.annotation.MediumTest;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.view.View;
 import android.widget.Button;
@@ -41,9 +42,13 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
 
     private TextView curNCH;
     private TextView curSOC;
+    private TextView curNP;
+    private TextView curKET;
 
     private TextView longestNCH;
     private TextView longestSOC;
+    private TextView longestNP;
+    private TextView longestKET;
 
 
     public MainActivityTest() {
@@ -78,9 +83,13 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
 
         curNCH = (TextView) mActivity.findViewById(R.id.curNCH);
         curSOC = (TextView) mActivity.findViewById(R.id.curSOC);
+        curNP = (TextView) mActivity.findViewById(R.id.curNP);
+        curKET = (TextView) mActivity.findViewById(R.id.curKET);
 
         longestNCH = (TextView) mActivity.findViewById(R.id.longestNCH);
         longestSOC = (TextView) mActivity.findViewById(R.id.longestSOC);
+        longestNP = (TextView) mActivity.findViewById(R.id.longestNP);
+        longestKET = (TextView) mActivity.findViewById(R.id.longestKET);
     }
 
 
@@ -221,7 +230,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
 
 
     @SmallTest
-    public void testCurrentStreak () throws InterruptedException {
+    public void testCurrentAndLongestStreakNCH () throws InterruptedException {
         clickToggle(toggleNCH);
 
         for (int ii = -3; ii < 0; ii++) {
@@ -257,6 +266,62 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         actual = Integer.parseInt(longestSOC.getText().toString());
         expected = 0;
         assertEquals(expected, actual);
+    }
+
+    @MediumTest
+    public void testMultipleStreaks () throws InterruptedException {
+        clickToggle(toggleNCH);
+        clickToggle(toggleSOC);
+        clickToggle(toggleNP);
+        clickToggle(toggleKET);
+
+
+        for (int ii = -3; ii < 0; ii++) {
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.DATE, ii);
+            String tomorrow = mDateFormat.format(cal.getTime());
+            setTextInEditText(editTextDate, tomorrow);
+            clickButton(buttonSave);
+        }
+
+        for (int ii = -10; ii < -5; ii++) {
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.DATE, ii);
+            String tomorrow = mDateFormat.format(cal.getTime());
+            setTextInEditText(editTextDate, tomorrow);
+            clickButton(buttonSave);
+        }
+
+        Thread.sleep(3000);
+
+        int actual;
+        int expected;
+
+        TextView[] curs = new TextView[]{
+                curNCH,
+                curSOC,
+                curNP,
+                curKET
+        };
+
+        TextView[] longs = new TextView[]{
+                longestNCH,
+                longestSOC,
+                longestNP,
+                longestKET
+        };
+
+        for (TextView cur: curs) {
+            actual = Integer.parseInt(cur.getText().toString());
+            expected = 3;
+            assertEquals(expected, actual);
+        }
+
+        for (TextView longest: longs) {
+            actual = Integer.parseInt(longest.getText().toString());
+            expected = 5;
+            assertEquals(expected, actual);
+        }
     }
 
 }
