@@ -268,26 +268,45 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         assertEquals(expected, actual);
     }
 
-    @MediumTest
-    public void testMultipleStreaks () throws InterruptedException {
+    private void toggleAll () {
         clickToggle(toggleNCH);
         clickToggle(toggleSOC);
         clickToggle(toggleNP);
         clickToggle(toggleKET);
+    }
+    @MediumTest
+    public void testMultipleStreaks () throws InterruptedException {
+        // turn on all switches
+        toggleAll();
 
+        Calendar cal = Calendar.getInstance();
+        String tomorrow;
 
         for (int ii = -3; ii < 0; ii++) {
-            Calendar cal = Calendar.getInstance();
+            cal = Calendar.getInstance();
             cal.add(Calendar.DATE, ii);
-            String tomorrow = mDateFormat.format(cal.getTime());
+            tomorrow = mDateFormat.format(cal.getTime());
             setTextInEditText(editTextDate, tomorrow);
             clickButton(buttonSave);
         }
 
+        // turn off all switches
+        toggleAll();
+
+        cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -4);
+
+        tomorrow = mDateFormat.format(cal.getTime());
+        setTextInEditText(editTextDate, tomorrow);
+        clickButton(buttonSave);
+
+        // turn back on
+        toggleAll();
+
         for (int ii = -10; ii < -5; ii++) {
-            Calendar cal = Calendar.getInstance();
+            cal = Calendar.getInstance();
             cal.add(Calendar.DATE, ii);
-            String tomorrow = mDateFormat.format(cal.getTime());
+            tomorrow = mDateFormat.format(cal.getTime());
             setTextInEditText(editTextDate, tomorrow);
             clickButton(buttonSave);
         }
