@@ -53,6 +53,8 @@ public class StreaksFragment extends Fragment {
         private TextView longestNP;
         private TextView longestKET;
 
+        private TextView datesNCH;
+
 
         /**
          * uses DaysEventHelper.C.flag_SOC type notation to store integer values
@@ -68,11 +70,19 @@ public class StreaksFragment extends Fragment {
 
             private HashMap<String, Integer> values = new HashMap<>();
 
+            // maps keys e.g. DaysEventHelper.C.flag_SOC to a string representation of the date
+            private HashMap<String, String> startDates = new HashMap<>();
+            private HashMap<String, String> endDates = new HashMap<>();
+
             public StreakResults() {
                 resetAll();
             }
 
-            public void increment(String key) {
+            public void increment(String key, String dateString) {
+                if (values.get(key) == 0) {
+                    startDates.put(key, dateString);
+                }
+
                 values.put(key, values.get(key) + 1);
             }
 
@@ -98,10 +108,16 @@ public class StreaksFragment extends Fragment {
                 return values.get(key);
             }
 
-            public void copy (String key, StreakResults rhs) {
+            public void copy (String key, StreakResults rhs, String dateOfLastEvent) {
+                endDates.put(key, dateOfLastEvent);
                 values.put(key, rhs.get(key));
             }
 
+            public String getDateString(String key) {
+                String startDate = startDates.get(key);
+                String endDate = endDates.get(key);
+                return String.format("%s - %s", startDate, endDate);
+            }
         }
 
 
@@ -118,6 +134,8 @@ public class StreaksFragment extends Fragment {
             longestSOC = (TextView) mainActivity.findViewById(R.id.longestSOC);
             longestNP = (TextView) mainActivity.findViewById(R.id.longestNP);
             longestKET = (TextView) mainActivity.findViewById(R.id.longestKET);
+
+            datesNCH = (TextView) mainActivity.findViewById(R.id.datesNCH);
         }
 
         @Override
@@ -181,20 +199,22 @@ public class StreaksFragment extends Fragment {
         private boolean calculateStreak (
                 Cursor cursor, String key, boolean found, StreakResults current, StreakResults longest, StreakResults tmp) {
 
+            String dateOfEventString = cursor.getString(cursor.getColumnIndexOrThrow(DaysEventHelper.C.date_of_event));
+
             boolean isInStreak = isInStreak(cursor, key);
             if (isInStreak) {
-                tmp.increment(key);
+                tmp.increment(key, dateOfEventString);
             } else {
                 found = true;
                 tmp.reset(key);
             }
 
             if (!found && tmp.get(key) > current.get(key)) {
-                current.copy(key, tmp);
+                current.copy(key, tmp, dateOfEventString);
             }
 
             if (tmp.get(key) > longest.get(key)) {
-                longest.copy(key, tmp);
+                longest.copy(key, tmp, dateOfEventString);
             }
 
             return found;
@@ -216,6 +236,8 @@ public class StreaksFragment extends Fragment {
             longestSOC.setText(String.format("%d", longest.get(DaysEventHelper.C.flag_SOC)));
             longestNP.setText(String.format("%d", longest.get(DaysEventHelper.C.flag_NP)));
             longestKET.setText(String.format("%d", longest.get(DaysEventHelper.C.flag_KET)));
+
+            datesNCH.setText(longest.getDateString(DaysEventHelper.C.flag_NCH));
         }
 
         private boolean isInStreak(Cursor cursor, String columnName) {
