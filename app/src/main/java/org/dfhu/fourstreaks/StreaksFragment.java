@@ -110,13 +110,18 @@ public class StreaksFragment extends Fragment {
 
             public void copy (String key, StreakResults rhs, String dateOfLastEvent) {
                 endDates.put(key, dateOfLastEvent);
+                startDates.put(key, rhs.getStartDate(key));
                 values.put(key, rhs.get(key));
+            }
+
+            private String getStartDate(String key) {
+                return startDates.get(key);
             }
 
             public String getDateString(String key) {
                 String startDate = startDates.get(key);
                 String endDate = endDates.get(key);
-                return String.format("%s - %s", startDate, endDate);
+                return String.format("%s - %s", endDate, startDate);
             }
         }
 
