@@ -54,6 +54,9 @@ public class StreaksFragment extends Fragment {
         private TextView longestKET;
 
         private TextView datesNCH;
+        private TextView datesSOC;
+        private TextView datesNP;
+        private TextView datesKET;
 
 
         /**
@@ -141,6 +144,9 @@ public class StreaksFragment extends Fragment {
             longestKET = (TextView) mainActivity.findViewById(R.id.longestKET);
 
             datesNCH = (TextView) mainActivity.findViewById(R.id.datesNCH);
+            datesSOC = (TextView) mainActivity.findViewById(R.id.datesSOC);
+            datesNP = (TextView) mainActivity.findViewById(R.id.datesNP);
+            datesKET = (TextView) mainActivity.findViewById(R.id.datesKET);
         }
 
         @Override
@@ -243,6 +249,9 @@ public class StreaksFragment extends Fragment {
             longestKET.setText(String.format("%d", longest.get(DaysEventHelper.C.flag_KET)));
 
             datesNCH.setText(longest.getDateString(DaysEventHelper.C.flag_NCH));
+            datesSOC.setText(longest.getDateString(DaysEventHelper.C.flag_SOC));
+            datesNP.setText(longest.getDateString(DaysEventHelper.C.flag_NP));
+            datesKET.setText(longest.getDateString(DaysEventHelper.C.flag_KET));
         }
 
         private boolean isInStreak(Cursor cursor, String columnName) {
