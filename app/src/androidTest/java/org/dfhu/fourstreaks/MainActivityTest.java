@@ -50,6 +50,11 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
     private TextView longestNP;
     private TextView longestKET;
 
+    private TextView datesNCH;
+    private TextView datesSOC;
+    private TextView datesNP;
+    private TextView datesKET;
+
 
     public MainActivityTest() {
         super(MainActivity.class);
@@ -90,6 +95,11 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         longestSOC = (TextView) mActivity.findViewById(R.id.longestSOC);
         longestNP = (TextView) mActivity.findViewById(R.id.longestNP);
         longestKET = (TextView) mActivity.findViewById(R.id.longestKET);
+
+        datesNCH = (TextView) mActivity.findViewById(R.id.datesNCH);
+        datesSOC = (TextView) mActivity.findViewById(R.id.datesSOC);
+        datesNP = (TextView) mActivity.findViewById(R.id.datesNP);
+        datesKET = (TextView) mActivity.findViewById(R.id.datesKET);
     }
 
 
@@ -125,7 +135,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         });
     }
 
-    /*
+
     @SmallTest
     public void testAllSwitchesVisible() {
         for (Switch toggle: switches) {
@@ -343,10 +353,9 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
             assertEquals(expected, actual);
         }
     }
-    */
+
     @SmallTest
-    public void testLongestStreakDates ()
-    {
+    public void testLongestStreakDates () throws InterruptedException {
         clickToggle(toggleNCH);
 
         Calendar startCal = Calendar.getInstance();
@@ -358,12 +367,20 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         endCal.roll(Calendar.DATE, -10);
 
         while (curCal.getTimeInMillis() >= endCal.getTimeInMillis()) {
-            curCal.roll(Calendar.DATE, -1);
-
             String tomorrow = mDateFormat.format(curCal.getTime());
             setTextInEditText(editTextDate, tomorrow);
             clickButton(buttonSave);
+            curCal.roll(Calendar.DATE, -1);
         }
+
+        Thread.sleep(3000);
+
+        String startString = mDateFormat.format(startCal.getTime());
+        String endString = mDateFormat.format(endCal.getTime());
+        String actual = datesNCH.getText().toString();
+        String expected = String.format("%s - %s", endString, startString);
+
+        assertEquals(expected, actual);
     }
 
 }
