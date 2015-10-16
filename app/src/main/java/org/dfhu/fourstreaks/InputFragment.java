@@ -45,7 +45,7 @@ public class InputFragment extends Fragment {
         mainActivity = (MainActivity) getActivity();
 
         setUpDate();
-        setUpSave();
+        setUpSaveButton();
 
         return rootView;
     }
@@ -110,7 +110,7 @@ public class InputFragment extends Fragment {
         }
     }
 
-    private void setUpSave() {
+    private void setUpSaveButton() {
         mSave = (Button) rootView.findViewById(R.id.buttonSave);
 
         toggleSOC = (Switch) rootView.findViewById(R.id.toggleSOC);

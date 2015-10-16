@@ -115,10 +115,6 @@ public class EventCursorAdapter extends CursorAdapter {
             bf.setText(String.format("bf: %.1f", bfValue));
         }
 
-
-
-
-
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
