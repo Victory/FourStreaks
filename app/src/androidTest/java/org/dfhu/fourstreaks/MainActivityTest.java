@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.RenamingDelegatingContext;
+import android.test.TouchUtils;
 import android.test.ViewAsserts;
 import android.test.suitebuilder.annotation.LargeTest;
 import android.test.suitebuilder.annotation.MediumTest;
 import android.test.suitebuilder.annotation.SmallTest;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -134,7 +136,6 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
             }
         });
     }
-
 
     @SmallTest
     public void testAllSwitchesVisible() {
@@ -383,4 +384,9 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         assertEquals(expected, actual);
     }
 
+    @SmallTest
+    public void testShowStreaks () throws InterruptedException {
+        mActivity.gotoFragment(1);
+        Thread.sleep(3000);
+    }
 }

@@ -31,6 +31,10 @@ public class MainActivity extends FragmentActivity implements EventCursorAdapter
         mViewPager.setAdapter(mAppSectionsPagerAdapter);
     }
 
+    public void gotoFragment (int position) {
+        mViewPager.setCurrentItem(position);
+    }
+
     public class AppSectionsPagerAdapter extends FragmentPagerAdapter {
         public AppSectionsPagerAdapter(FragmentManager fm) {
             super(fm);
