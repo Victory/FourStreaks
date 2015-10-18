@@ -124,6 +124,8 @@ public class StreaksFragment extends Fragment {
             public String getDateString(String key) {
                 String startDate = startDates.get(key);
                 String endDate = endDates.get(key);
+                startDate = (startDate != null) ? startDate : "N/A";
+                endDate = (endDate != null) ? endDate : "N/A";
                 return String.format("%s - %s", endDate, startDate);
             }
         }
