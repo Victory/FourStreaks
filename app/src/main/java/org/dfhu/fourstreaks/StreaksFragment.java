@@ -124,8 +124,14 @@ public class StreaksFragment extends Fragment {
             public String getDateString(String key) {
                 String startDate = startDates.get(key);
                 String endDate = endDates.get(key);
-                startDate = (startDate != null) ? startDate : "N/A";
-                endDate = (endDate != null) ? endDate : "N/A";
+                String placeHolder = "N/A";
+                startDate = (startDate != null) ? startDate :placeHolder;
+                endDate = (endDate != null) ? endDate : placeHolder;
+
+                // no startdate and no end date don't show metric
+                if (startDate.equals(placeHolder) && endDate.equals(placeHolder)) {
+                    return "";
+                }
                 return String.format("%s - %s", endDate, startDate);
             }
         }
